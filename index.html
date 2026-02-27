@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>LinuxPlain — Linux Explained in Plain English</title>
+    <meta name="description"
+        content="Learn Linux commands from zero to DevOps with plain English explanations, real-world analogies, and a live simulated terminal.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #0D0D0D;
+            --card: #1A1A1A;
+            --green: #00FF41;
+            --green-dark: #00AA00;
+            --white: #FFFFFF;
+            --grey: #888888;
+            --label: #555555;
+            --border: #333333;
+            --red: #FF4444;
+            --analogy: #AAAAAA;
+            --font-mono: 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--white);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh
+        }
+
+        a {
+            color: var(--green);
+            text-decoration: none;
+            cursor: pointer
+        }
+
+        a:hover {
+            text-decoration: underline
+        }
+
+        ::selection {
+            background: var(--green);
+            color: var(--bg)
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font-body)
+        }
+
+        /* NAV */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(13, 13, 13, .95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--green);
+            cursor: pointer;
+            letter-spacing: -0.5px
+        }
+
+        .nav-logo span {
+            color: var(--grey)
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px
+        }
+
+        .nav-links a {
+            font-size: .85rem;
+            color: var(--grey);
+            font-weight: 600;
+            transition: .2s;
+            text-decoration: none
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--green)
+        }
+
+        /* SCREENS */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding-top: 56px
+        }
+
+        .screen.active {
+            display: block
+        }
+
+        /* LANDING */
+        #landing.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 40px;
+            text-align: center;
+            min-height: 100vh
+        }
+
+        .landing-terminal {
+            font-family: var(--font-mono);
+            font-size: clamp(.85rem, 2vw, 1.1rem);
+            color: var(--green);
+            margin-bottom: 48px;
+            min-height: 2em;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding-top: 10px
+        }
+
+        .landing-terminal .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--green);
+            animation: blink 1s step-end infinite;
+            margin-left: 2px
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0
+            }
+        }
+
+        .landing-title {
+            font-family: var(--font-mono);
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-weight: 700;
+            color: var(--green);
+            letter-spacing: -3px;
+            margin-bottom: 16px;
+            line-height: 1
+        }
+
+        .landing-tagline {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: var(--grey);
+            max-width: 540px;
+            margin-bottom: 40px;
+            line-height: 1.6
+        }
+
+        .btn-primary {
+            font-family: var(--font-mono);
+            background: var(--green);
+            color: var(--bg);
+            border: none;
+            padding: 18px 48px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .2s;
+            letter-spacing: -.5px;
+            width: 100%;
+            max-width: 360px
+        }
+
+        .btn-primary:hover {
+            background: #00cc33;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 255, 65, .3)
+        }
+
+        .btn-secondary {
+            font-family: var(--font-mono);
+            background: transparent;
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 12px 24px;
+            font-size: .85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: .2s
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 65, .1)
+        }
+
+        .landing-note {
+            font-size: .85rem;
+            color: var(--grey);
+            margin-top: 16px
+        }
+
+        .landing-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin-top: 80px;
+            width: 100%
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: left;
+            transition: .3s
+        }
+
+        .feature-card:hover {
+            border-color: var(--green);
+            transform: translateY(-4px)
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-mono);
+            color: var(--green);
+            font-size: 1rem;
+            margin-bottom: 12px
+        }
+
+        .feature-card p {
+            color: var(--grey);
+            font-size: .9rem;
+            line-height: 1.6
+        }
+
+        /* TIERS */
+        #tiers {
+            padding: 80px 24px 60px
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 700;
+            color: var(--green);
+            text-align: center;
+            margin-bottom: 8px
+        }
+
+        .section-sub {
+            text-align: center;
+            color: var(--grey);
+            margin-bottom: 48px;
+            font-size: .95rem
+        }
+
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        .tier-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            cursor: pointer;
+            transition: .3s;
+            position: relative;
+            overflow: hidden
+        }
+
+        .tier-card:hover {
+            border-color: var(--green);
+            transform: translateY(-3px)
+        }
+
+        .tier-card.completed {
+            border-color: var(--green-dark);
+            background: #1a2a1a
+        }
+
+        .tier-card.locked {
+            opacity: .5;
+            cursor: default
+        }
+
+        .tier-card.locked:hover {
+            transform: none;
+            border-color: var(--border)
+        }
+
+        .tier-badge {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--bg);
+            background: var(--green);
+            padding: 3px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 1px
+        }
+
+        .tier-badge.locked-badge {
+            background: var(--grey)
+        }
+
+        .tier-card h3 {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            color: var(--white);
+            margin-bottom: 8px
+        }
+
+        .tier-card p {
+            color: var(--grey);
+            font-size: .85rem;
+            line-height: 1.5;
+            margin-bottom: 16px
+        }
+
+        .tier-meta {
+            display: flex;
+            gap: 16px;
+            font-size: .75rem;
+            color: var(--grey);
+            font-family: var(--font-mono)
+        }
+
+        .tier-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 1.2rem
+        }
+
+        .tier-progress {
+            margin-top: 12px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden
+        }
+
+        .tier-progress-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 2px;
+            transition: width .5s
+        }
+
+        /* LESSON */
+        #lesson {
+            padding-top: 56px;
+            height: 100vh;
+            display: none;
+            overflow: hidden
+        }
+
+        #lesson.active {
+            display: flex
+        }
+
+        .lesson-panel {
+            width: 60%;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            padding: 40px 40px 80px;
+            border-right: 1px solid var(--border)
+        }
+
+        .lesson-panel::-webkit-scrollbar {
+            width: 4px
+        }
+
+        .lesson-meta {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--label);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px
+        }
+
+        .lesson-cmd {
+            font-family: var(--font-mono);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--green);
+            margin-bottom: 28px;
+            letter-spacing: -1px
+        }
+
+        .lesson-section {
+            margin-bottom: 24px
+        }
+
+        .lesson-label {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--label);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600
+        }
+
+        .lesson-plain {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--white)
+        }
+
+        .lesson-analogy {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--analogy);
+            font-style: italic
+        }
+
+        .lesson-example {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: var(--font-mono);
+            font-size: .9rem;
+            color: var(--green);
+            overflow-x: auto;
+            line-height: 1.6
+        }
+
+        .lesson-why {
+            font-size: .95rem;
+            color: var(--grey);
+            line-height: 1.6
+        }
+
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 36px;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .btn-lesson {
+            font-family: var(--font-mono);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--white);
+            transition: .2s
+        }
+
+        .btn-lesson:hover {
+            border-color: var(--green);
+            color: var(--green)
+        }
+
+        .btn-lesson:disabled {
+            opacity: .3;
+            cursor: default
+        }
+
+        .btn-lesson.primary {
+            background: var(--green);
+            color: var(--bg);
+            border-color: var(--green)
+        }
+
+        .btn-lesson.primary:hover {
+            background: #00cc33
+        }
+
+        /* TERMINAL */
+        .terminal-panel {
+            width: 40%;
+            height: calc(100vh - 56px);
+            display: flex;
+            flex-direction: column;
+            background: #000
+        }
+
+        .mobile-quick-keys {
+            display: none;
+            background: #000;
+            padding: 6px 16px;
+            gap: 6px;
+            overflow-x: auto;
+            border-top: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .mobile-quick-keys::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-qk-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--green);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .file-explorer {
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            padding: 8px 16px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--white);
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-explorer-header {
+            color: var(--green);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .file-explorer-header:hover {
+            text-decoration: underline;
+        }
+
+        .file-explorer-body {
+            display: none;
+            padding-top: 4px;
+        }
+
+        .file-explorer-body.expanded {
+            display: block;
+        }
+
+        .fe-item {
+            transition: color 1s, opacity 0.3s;
+        }
+
+        .fe-item.created {
+            color: var(--green);
+        }
+
+        .terminal-challenge {
+            padding: 16px 20px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            min-height: 80px
+        }
+
+        .challenge-label {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px
+        }
+
+        .terminal-challenge p {
+            color: var(--white);
+            font-size: .88rem;
+            line-height: 1.5
+        }
+
+        .challenge-status {
+            margin-top: 8px;
+            font-family: var(--font-mono);
+            font-size: .8rem
+        }
+
+        .challenge-status.success {
+            color: var(--green)
+        }
+
+        .challenge-status.hint {
+            color: var(--analogy)
+        }
+
+        .challenge-skip {
+            font-size: .75rem;
+            color: var(--grey);
+            cursor: pointer;
+            margin-top: 6px;
+            font-family: var(--font-mono)
+        }
+
+        .challenge-skip:hover {
+            color: var(--green)
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            line-height: 1.6
+        }
+
+        .terminal-body::-webkit-scrollbar {
+            width: 4px
+        }
+
+        .terminal-line {
+            color: var(--green);
+            white-space: pre-wrap;
+            word-break: break-all
+        }
+
+        .terminal-line.output {
+            color: var(--white)
+        }
+
+        .terminal-line.error {
+            color: var(--red)
+        }
+
+        .terminal-input-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #000;
+            border-top: 1px solid var(--border)
+        }
+
+        .terminal-prompt {
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            color: var(--green);
+            white-space: nowrap;
+            margin-right: 8px
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--green);
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            caret-color: var(--green)
+        }
+
+        /* PROGRESS */
+        #progress {
+            padding: 80px 24px 60px
+        }
+
+        .progress-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px
+        }
+
+        .progress-tier {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px
+        }
+
+        .progress-tier h3 {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--white);
+            margin-bottom: 4px
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0 8px
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 4px;
+            transition: width .5s
+        }
+
+        .progress-text {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--grey)
+        }
+
+        .streak-box {
+            text-align: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 300px;
+            margin: 0 auto 32px
+        }
+
+        .streak-num {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--green)
+        }
+
+        .streak-label {
+            font-size: .8rem;
+            color: var(--grey);
+            margin-top: 4px
+        }
+
+        /* REFERENCE */
+        #reference {
+            padding: 80px 24px 60px
+        }
+
+        .ref-search {
+            max-width: 500px;
+            margin: 0 auto 16px;
+            position: relative
+        }
+
+        .ref-search input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--white);
+            font-family: var(--font-mono);
+            font-size: .9rem;
+            outline: none
+        }
+
+        .ref-search input:focus {
+            border-color: var(--green)
+        }
+
+        .ref-search input::placeholder {
+            color: var(--grey)
+        }
+
+        .ref-filters {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap
+        }
+
+        .ref-filter {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--grey);
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .ref-filter.active,
+        .ref-filter:hover {
+            border-color: var(--green);
+            color: var(--green)
+        }
+
+        .ref-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .ref-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .ref-card:hover {
+            border-color: var(--green)
+        }
+
+        .ref-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .ref-done-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0
+        }
+
+        .ref-done-dot.incomplete {
+            background: var(--border)
+        }
+
+        .ref-card-cmd {
+            font-family: var(--font-mono);
+            font-size: .95rem;
+            color: var(--green);
+            font-weight: 600;
+            min-width: 100px
+        }
+
+        .ref-card-desc {
+            color: var(--grey);
+            font-size: .85rem;
+            flex: 1
+        }
+
+        .ref-card-tier {
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            color: var(--grey);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 4px
+        }
+
+        .ref-expanded {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border)
+        }
+
+        .ref-card.open .ref-expanded {
+            display: block
+        }
+
+        .ref-analogy {
+            color: var(--analogy);
+            font-style: italic;
+            font-size: .9rem;
+            margin-bottom: 12px;
+            line-height: 1.6
+        }
+
+        .ref-example {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            color: var(--green);
+            line-height: 1.5
+        }
+
+        /* MOBILE */
+        @media(max-width:860px) {
+            #lesson.active {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh
+            }
+
+            .lesson-panel {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 24px 20px 40px
+            }
+
+            .terminal-panel {
+                width: 100%;
+                height: 50vh;
+                min-height: 320px
+            }
+
+            .mobile-quick-keys {
+                display: flex;
+            }
+
+            .nav-links {
+                gap: 14px
+            }
+
+            .nav-links a {
+                font-size: .78rem
+            }
+
+            .tiers-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:480px) {
+            .landing-features {
+                grid-template-columns: 1fr
+            }
+
+            .btn-primary {
+                padding: 16px 32px;
+                font-size: 1rem
+            }
+
+            .lesson-cmd {
+                font-size: 1.8rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav">
+        <div class="nav-logo" onclick="showScreen('landing')">Linux<span>Plain</span></div>
+        <div class="nav-links">
+            <a onclick="showScreen('tiers')" id="nav-tiers">Lessons</a>
+            <a onclick="showScreen('reference')" id="nav-reference">Reference</a>
+            <a onclick="showScreen('progress')" id="nav-progress">Progress</a>
+        </div>
+    </nav>
+
+    <section class="screen active" id="landing">
+        <div class="landing-terminal"><span id="typeTarget"></span><span class="cursor"></span></div>
+        <h1 class="landing-title">LinuxPlain</h1>
+        <p class="landing-tagline">Linux explained in plain English. With a terminal to practice in.</p>
+        <button class="btn-primary" id="ctaBtn" onclick="handleCTA()">Start Learning — Free</button>
+        <p class="landing-note">No signup. No login. Open and learn.</p>
+        <div class="landing-features">
+            <div class="feature-card">
+                <h3>📖 Learn</h3>
+                <p>Every command explained in plain English with real-world analogies. No jargon until you're ready.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⌨️ Practice</h3>
+                <p>A simulated terminal right next to every lesson. Read, then type. Learn by doing.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Progress</h3>
+                <p>See exactly where you are. Your progress saves automatically. Come back anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" id="tiers"></section>
+
+    <section class="screen" id="lesson">
+        <div class="lesson-panel" id="lessonContent"></div>
+        <div class="terminal-panel">
+            <div class="terminal-challenge" id="termChallenge"></div>
+            <div id="fileExplorer" class="file-explorer"></div>
+            <div class="terminal-body" id="termBody"></div>
+            <div class="mobile-quick-keys" id="mobileQuickKeys">
+                <button class="mobile-qk-btn">/</button>
+                <button class="mobile-qk-btn">-</button>
+                <button class="mobile-qk-btn">*</button>
+                <button class="mobile-qk-btn">|</button>
+                <button class="mobile-qk-btn">~</button>
+                <button class="mobile-qk-btn">..</button>
+                <button class="mobile-qk-btn">Tab</button>
+                <button class="mobile-qk-btn">↵</button>
+            </div>
+            <div class="terminal-input-row">
+                <span class="terminal-prompt" id="termPrompt">user@linuxplain:~$</span>
+                <input class="terminal-input" id="termInput" type="text" autocomplete="off" autocapitalize="off"
+                    spellcheck="false">
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" id="progress"></section>
+    <section class="screen" id="reference"></section>
+
+    <script>
+        const TIERS = [
+            {
+                id: 1, name: 'Absolute Beginner', desc: 'Never used a terminal before. Start here.', time: '~45 min', lessons: [
+                    { id: 't1-l1', cmd: 'pwd', plain: 'Print the full path of the folder you are currently in.', analogy: 'You\'re blindfolded in a building. pwd turns on the lights and tells you the full address of where you\'re standing.', example: 'pwd\n# /home/user', why: 'You\'ll use this constantly to confirm where you are before running other commands.', challenge: 'Type pwd to see your current directory.', validate: c => c.trim() === 'pwd' },
+                    { id: 't1-l2', cmd: 'ls', plain: 'List everything in the current folder — files and other folders.', analogy: 'You walk into a room and flip the light switch. Everything on the shelves becomes visible.', example: 'ls\n# Documents  Downloads  Music  Pictures\n\nls -la\n# Shows hidden files too', why: 'This is how you look around. You will type ls hundreds of times.', challenge: 'Type ls to see what\'s in this folder.', validate: c => c.trim() === 'ls' || c.trim() === 'ls -la' },
+                    { id: 't1-l3', cmd: 'cd', plain: 'Move into a different folder. Change directory.', analogy: 'Like walking through a door into another room. cd .. goes back the way you came.', example: 'cd Documents\n# Now inside Documents\n\ncd ..\n# Back up one level', why: 'cd and ls are your legs and eyes. This is how you navigate.', challenge: 'Type cd Documents to move into Documents.', validate: c => c.trim() === 'cd Documents' },
+                    { id: 't1-l4', cmd: 'mkdir', plain: 'Create a new empty folder.', analogy: 'Like putting a new empty box on a shelf. The box exists but has nothing in it yet.', example: 'mkdir myfolder\n# Creates a folder called myfolder', why: 'Organising files into folders is fundamental.', challenge: 'Type mkdir test to create a folder called test.', validate: c => c.trim() === 'mkdir test' },
+                    { id: 't1-l5', cmd: 'touch', plain: 'Create a new empty file. If it exists already, it updates the timestamp.', analogy: 'Like putting a blank sticky note on a wall. The note exists but has nothing written on it.', example: 'touch notes.txt\n# Creates an empty file', why: 'Quick way to create files. Used in scripts for placeholders.', challenge: 'Type touch hello.txt to create a new file.', validate: c => c.trim() === 'touch hello.txt' },
+                    { id: 't1-l6', cmd: 'cat', plain: 'Show the contents of a file on screen.', analogy: 'Like opening a book and reading every page out loud, all at once.', example: 'cat readme.txt\n# Welcome to LinuxPlain!', why: 'Quick way to peek inside any text file.', challenge: 'Type cat readme.txt to read the file.', validate: c => c.trim() === 'cat readme.txt' },
+                    { id: 't1-l7', cmd: 'cp', plain: 'Copy a file or folder to a new location. The original stays.', analogy: 'Like a photocopier. The original stays, and you get an identical copy.', example: 'cp file.txt backup.txt\n# Now you have both files', why: 'Backing up files before editing is a habit that will save you.', challenge: 'Type cp hello.txt copy.txt to copy the file.', validate: c => c.trim() === 'cp hello.txt copy.txt' },
+                    { id: 't1-l8', cmd: 'mv', plain: 'Move or rename a file. The original is gone from where it was.', analogy: 'Like physically picking something up and putting it somewhere else.', example: 'mv old.txt new.txt\n# Renames the file', why: 'This is both your "move" and "rename" command.', challenge: 'Type mv hello.txt greeting.txt to rename it.', validate: c => c.trim() === 'mv hello.txt greeting.txt' },
+                    { id: 't1-l9', cmd: 'rm', plain: 'Delete a file permanently. There is no recycle bin. It\'s gone.', analogy: 'Like shredding a document. Once gone, it\'s gone. No undo.', example: 'rm file.txt\n# File deleted forever', why: 'Be very careful. Double-check before hitting Enter.', challenge: 'Type rm copy.txt to delete the copied file.', validate: c => c.trim() === 'rm copy.txt' },
+                    { id: 't1-l10', cmd: 'clear', plain: 'Clean the terminal screen. History is still there — press up arrow.', analogy: 'Like wiping a whiteboard. Your notes still exist in memory.', example: 'clear\n# Screen is now clean', why: 'Keeps things tidy. Shortcut: Ctrl+L.', challenge: 'Type clear to clean the screen.', validate: c => c.trim() === 'clear' },
+                    { id: 't1-l11', cmd: 'man', plain: 'Show the manual page for any command. The built-in documentation.', analogy: 'Like the instruction booklet that came with every tool. Hard to read but always accurate.', example: 'man ls\n# Opens the manual for ls\n# Press q to quit', why: 'When you forget a flag, man is your first stop.', challenge: 'Type man ls to read the manual.', validate: c => c.trim() === 'man ls' },
+                    { id: 't1-l12', cmd: 'echo', plain: 'Print text to the screen or into a file.', analogy: 'Like a loudspeaker. Whatever you tell it to say, it says it.', example: 'echo "hello world"\n# hello world\n\necho "data" > file.txt\n# Writes text into a file', why: 'Used everywhere in scripts and for writing text to files.', challenge: 'Type echo hello to print hello.', validate: c => c.trim() === 'echo hello' }
+                ]
+            },
+            {
+                id: 2, name: 'Intermediate', desc: 'Know ls and cd. Ready for pipes, redirects, and permissions.', time: '~75 min', lessons: [
+                    { id: 't2-l1', cmd: 'grep', plain: 'Search text and show only lines that match a pattern.', analogy: 'Like using Ctrl+F on a document — but for the terminal, and 10x more powerful.', example: 'grep "error" log.txt\n# Shows lines containing "error"\n\nls -la | grep ".txt"\n# Filter output', why: 'You will use grep every single day. It\'s the universal search tool.', challenge: 'Type grep "hello" data.txt to search the file.', validate: c => c.trim().includes('grep') && c.trim().includes('data.txt') },
+                    { id: 't2-l2', cmd: 'find', plain: 'Search for files and folders by name, size, owner, or type.', analogy: 'Like a search dog. You describe what you want, it finds it anywhere on the system.', example: 'find . -name "*.txt"\n# All .txt files here and below\n\nfind / -user bandit7 -size 33c 2>/dev/null', why: 'When you know a file exists but can\'t remember where.', challenge: 'Type find . -name "*.txt" to find text files.', validate: c => c.trim().includes('find') && c.trim().includes('-name') },
+                    { id: 't2-l3', cmd: '> (redirect)', plain: 'Send output to a file instead of the screen. Overwrites whatever was there.', analogy: 'Like redirecting a river. Instead of water going to the sea, you send it into a bucket.', example: 'echo "hello" > output.txt\n# Creates file with "hello"', why: 'Extremely common for saving command output.', challenge: 'Type echo "test" > output.txt to redirect to a file.', validate: c => c.includes('>') && c.includes('output.txt') },
+                    { id: 't2-l4', cmd: '>> (append)', plain: 'Add output to the end of a file without deleting what\'s already there.', analogy: 'Like adding a new line to the bottom of a notebook page.', example: 'echo "line 2" >> output.txt\n# Adds to end of file', why: 'Use >> when you want to add, not replace.', challenge: 'Type echo "more" >> output.txt to append.', validate: c => c.includes('>>') && c.includes('output.txt') },
+                    { id: 't2-l5', cmd: '< (stdin)', plain: 'Feed a file into a command as its input, instead of typing.', analogy: 'Like putting paper into a scanner. The file feeds into the command.', example: 'sort < names.txt\n# Sorts the file contents', why: 'Used when commands expect keyboard input but you want file input.', challenge: 'Type sort < data.txt to sort file contents.', validate: c => c.includes('<') && c.includes('data.txt') },
+                    { id: 't2-l6', cmd: '2> (stderr)', plain: 'Redirect error messages to a file instead of the screen.', analogy: 'Like having a second bin just for error messages. Normal output goes one place, errors another.', example: 'ls /fake 2> errors.txt\n# Errors go to file, not screen', why: 'Keeps your output clean when commands throw lots of errors.', challenge: 'Type ls /fake 2> errors.txt to redirect errors.', validate: c => c.includes('2>') },
+                    { id: 't2-l7', cmd: '/dev/null', plain: 'The black hole of Linux. Anything sent here disappears forever.', analogy: 'Like a shredder connected to your terminal. Send something there and it\'s gone silently.', example: 'find / -name "test" 2>/dev/null\n# Hides all error messages', why: 'Essential for hiding noise when searching the whole system.', challenge: 'Type find / -name "x" 2>/dev/null to search quietly.', validate: c => c.includes('/dev/null') },
+                    { id: 't2-l8', cmd: '| (pipe)', plain: 'Take the output of one command and feed it directly into another.', analogy: 'A factory conveyor belt. Machine 1 does its job and passes the result straight to machine 2.', example: 'ls -la | grep ".txt"\n# List files, then filter\n\ncat log.txt | wc -l\n# Count lines', why: 'Pipes make Linux incredibly powerful. Chain simple commands for complex tasks.', challenge: 'Type ls | grep Documents to filter output.', validate: c => c.includes('|') && c.includes('grep') },
+                    { id: 't2-l9', cmd: 'sort', plain: 'Sort lines of text alphabetically or numerically.', analogy: 'Like sorting a stack of cards into order. A to Z or 1 to 100.', example: 'sort data.txt\n# Alphabetical order\n\nsort -n numbers.txt\n# Numeric order', why: 'Often paired with uniq to find unique or duplicate lines.', challenge: 'Type sort data.txt to sort the file.', validate: c => c.trim().startsWith('sort') && c.includes('data.txt') },
+                    { id: 't2-l10', cmd: 'uniq', plain: 'Remove or find duplicate lines. The file must be sorted first.', analogy: 'Like looking through a sorted pile and removing any card that appears more than once.', example: 'sort data.txt | uniq\n# Remove duplicates\n\nsort data.txt | uniq -u\n# Show only unique lines', why: 'The classic combo sort | uniq is used constantly in data processing.', challenge: 'Type sort data.txt | uniq to deduplicate.', validate: c => c.includes('sort') && c.includes('uniq') },
+                    { id: 't2-l11', cmd: 'wc', plain: 'Count lines, words, or characters in a file.', analogy: 'Like a word counter in Word — but for the terminal.', example: 'wc data.txt\n#   5  20 120 data.txt\n\nwc -l data.txt\n# Just count lines', why: 'Often piped: cat log | grep error | wc -l = how many errors?', challenge: 'Type wc data.txt to count lines, words, characters.', validate: c => c.includes('wc') },
+                    { id: 't2-l12', cmd: 'head', plain: 'Show the first 10 lines of a file (or however many you specify).', analogy: 'Like reading only the first page of a book to get the gist.', example: 'head -5 data.txt\n# First 5 lines', why: 'Quick preview of large files without loading everything.', challenge: 'Type head data.txt to see the first lines.', validate: c => c.includes('head') },
+                    { id: 't2-l13', cmd: 'tail', plain: 'Show the last 10 lines of a file. Also used to watch log files live.', analogy: 'Like flipping to the last page of a book.', example: 'tail data.txt\n# Last 10 lines\n\ntail -f /var/log/syslog\n# Watch live!', why: 'tail -f is how sysadmins watch live logs. Essential.', challenge: 'Type tail data.txt to see the last lines.', validate: c => c.includes('tail') },
+                    { id: 't2-l14', cmd: 'less', plain: 'Read a file one screen at a time. Arrows to navigate, q to quit.', analogy: 'Like reading a book page by page instead of having it all dumped on you.', example: 'less bigfile.txt\n# Navigate with arrows\n# Press q to quit', why: 'For large files, cat floods the screen. less keeps it calm.', challenge: 'Type less data.txt to read page by page.', validate: c => c.trim() === 'less data.txt' },
+                    { id: 't2-l15', cmd: 'chmod', plain: 'Change who can read, write, or run a file.', analogy: 'Like changing the locks on a door. You decide who gets a key.', example: 'chmod +x script.sh\n# Make executable\n\nchmod 755 script.sh\n# Owner: full, Others: read+execute', why: 'If a script won\'t run, chmod +x is usually the fix.', challenge: 'Type chmod +x script.sh to make it executable.', validate: c => c.trim() === 'chmod +x script.sh' },
+                    { id: 't2-l16', cmd: 'chown', plain: 'Change who owns a file.', analogy: 'Like transferring the deed of a house to someone else.', example: 'chown user:group file.txt', why: 'Important for server deployments — files need the right owner.', challenge: 'Type chown user file.txt to change owner.', validate: c => c.includes('chown') },
+                    { id: 't2-l17', cmd: 'sudo', plain: 'Run a command as the admin (root) user. Use with care.', analogy: 'Like using a master key. Opens everything but must be used carefully.', example: 'sudo apt update\n# Needs admin privileges', why: 'Many system commands need sudo. Never run sudo rm -rf /.', challenge: 'Type sudo ls /root to list the root directory.', validate: c => c.trim() === 'sudo ls /root' },
+                    { id: 't2-l18', cmd: 'file', plain: 'Tell you what type a file is, regardless of its extension.', analogy: 'Like a doctor who can identify any substance just by looking at it.', example: 'file data.bin\n# data.bin: ASCII text\n\nfile photo.jpg\n# JPEG image data', why: 'Extensions can lie. file tells you the truth about what\'s inside.', challenge: 'Type file readme.txt to check its type.', validate: c => c.includes('file') && c.includes('readme') }
+                ]
+            },
+            {
+                id: 3, name: 'Advanced', desc: 'Scripting, compression, text processing, and process control.', time: '~90 min', lessons: [
+                    { id: 't3-l1', cmd: 'strings', plain: 'Extract all human-readable text from any file, even binary files.', analogy: 'Like shining a UV light on a document to reveal hidden ink — finds readable text inside any file.', example: 'strings data.bin\nstrings data.txt | grep "=="', why: 'Essential for finding passwords and clues hidden in binary files.', challenge: 'Type strings readme.txt to extract text.', validate: c => c.includes('strings') },
+                    { id: 't3-l2', cmd: 'base64', plain: 'Encode or decode base64 data. base64 -d decodes it back.', analogy: 'Like a simple substitution code. Letters become different letters, but easily reversible.', example: 'echo "hello" | base64\ncat file.txt | base64 -d', why: 'Used constantly in web, APIs, and CTF challenges.', challenge: 'Type echo "hello" | base64 to encode.', validate: c => c.includes('base64') },
+                    { id: 't3-l3', cmd: 'tr', plain: 'Translate or replace characters. Used for ROT13 and simple ciphers.', analogy: 'Like a find-and-replace that works on individual characters across the whole text.', example: 'echo "hello" | tr "a-z" "A-Z"\ncat file | tr "A-Za-z" "N-ZA-Mn-za-m"', why: 'Quick character transformations. ROT13 is a classic use.', challenge: 'Type echo "hello" | tr "a-z" "A-Z" to uppercase.', validate: c => c.includes('tr') },
+                    { id: 't3-l4', cmd: 'xxd', plain: 'Show a file as hexadecimal, or reverse a hexdump back to binary.', analogy: 'Like an X-ray for files. Shows you the raw bytes. xxd -r reverses it.', example: 'xxd file.txt\nxxd -r data.hex > output', why: 'Used when dealing with binary data and hex dumps.', challenge: 'Type xxd readme.txt to view hex.', validate: c => c.includes('xxd') },
+                    { id: 't3-l5', cmd: 'gzip / gunzip', plain: 'Compress or decompress .gz files.', analogy: 'Like vacuum-packing clothes. Makes files smaller. gunzip opens them back up.', example: 'gzip file.txt\ngunzip file.txt.gz', why: 'One of the most common compression formats on Linux.', challenge: 'Type gzip notes.txt to compress.', validate: c => c.includes('gzip') },
+                    { id: 't3-l6', cmd: 'bzip2 / bunzip2', plain: 'Compress or decompress .bz2 files. Better ratio than gzip.', analogy: 'Like a more powerful vacuum packer. Slower but smaller result.', example: 'bzip2 file.txt\nbzip2 -d file.bz2', why: 'Higher compression ratio for when size matters.', challenge: 'Type bzip2 data.txt to compress.', validate: c => c.includes('bzip2') },
+                    { id: 't3-l7', cmd: 'tar', plain: 'Bundle multiple files into one archive, with optional compression.', analogy: 'Like putting multiple items into one box for shipping.', example: 'tar -czf archive.tar.gz folder/\ntar -xvf archive.tar', why: 'Standard way to package and distribute files on Linux.', challenge: 'Type tar -cf archive.tar Documents to create archive.', validate: c => c.includes('tar') },
+                    { id: 't3-l8', cmd: 'diff', plain: 'Show the differences between two files line by line.', analogy: 'Like track changes in Word. Shows exactly what changed between versions.', example: 'diff file1.txt file2.txt\ndiff -u old.txt new.txt', why: 'Essential for code reviews and finding what changed.', challenge: 'Type diff readme.txt notes.txt to compare.', validate: c => c.includes('diff') },
+                    { id: 't3-l9', cmd: 'awk', plain: 'Process and transform text column by column. Extremely powerful.', analogy: 'Like Excel formulas but for the terminal. Can extract, calculate, and reshape data.', example: 'awk "{print $1}" file.txt\nawk -F: "{print $1}" /etc/passwd', why: 'One of the most powerful text processing tools ever created.', challenge: 'Type awk "{print $1}" data.txt to extract column 1.', validate: c => c.includes('awk') },
+                    { id: 't3-l10', cmd: 'sed', plain: 'Find and replace text inside files or streams.', analogy: 'Like Ctrl+H in Word but for the terminal. Can edit files without opening them.', example: 'sed "s/old/new/g" file.txt\necho "hello world" | sed "s/world/linux/"', why: 'Automate text editing across thousands of files.', challenge: 'Type echo "hello world" | sed "s/world/linux/" to replace.', validate: c => c.includes('sed') },
+                    { id: 't3-l11', cmd: 'xargs', plain: 'Take output from one command and use it as arguments for another.', analogy: 'Like a personal assistant who takes a list and passes items one by one.', example: 'find . -name "*.txt" | xargs grep "error"\necho "a b c" | xargs mkdir', why: 'Bridges commands that output lists with commands that need arguments.', challenge: 'Type echo "a b c" | xargs echo to pass args.', validate: c => c.includes('xargs') },
+                    { id: 't3-l12', cmd: 'cut', plain: 'Extract specific columns or characters from each line.', analogy: 'Like a paper guillotine that cuts the same position from every line.', example: 'cut -d":" -f1 /etc/passwd\necho "hello:world" | cut -d":" -f2', why: 'Quick column extraction without learning awk.', challenge: 'Type echo "a:b:c" | cut -d":" -f2 to extract.', validate: c => c.includes('cut') },
+                    { id: 't3-l13', cmd: 'tee', plain: 'Write output to a file AND show it on screen at the same time.', analogy: 'Like a T-junction in a pipe. Water goes both ways.', example: 'ls -la | tee output.txt\necho "log" | tee -a logfile.txt', why: 'See results while also saving them to a file.', challenge: 'Type echo "test" | tee output.txt to write and display.', validate: c => c.includes('tee') },
+                    { id: 't3-l14', cmd: 'ln', plain: 'Create a link to a file. Symbolic links are like shortcuts.', analogy: 'Like a shortcut on your desktop. The shortcut is not the file — it just points to it.', example: 'ln -s /real/path shortcut\nln -s ~/Documents/readme.txt ~/Desktop/readme', why: 'Avoids duplicating files. One file, multiple access points.', challenge: 'Type ln -s readme.txt mylink to create a symlink.', validate: c => c.includes('ln') },
+                    { id: 't3-l15', cmd: 'ps', plain: 'Show all processes currently running on the system.', analogy: 'Like opening Task Manager. Every running program is a process.', example: 'ps aux\nps aux | grep nginx', why: 'First step in troubleshooting: what is actually running?', challenge: 'Type ps aux to list processes.', validate: c => c.includes('ps') },
+                    { id: 't3-l16', cmd: 'kill', plain: 'Stop a process by its ID number.', analogy: 'Like force-quitting an app, but from the terminal.', example: 'kill 1234\nkill -9 1234', why: 'When a process is stuck or consuming too many resources.', challenge: 'Type kill 1234 to stop a process.', validate: c => c.includes('kill') },
+                    { id: 't3-l17', cmd: 'crontab', plain: 'Schedule tasks to run automatically at set times.', analogy: 'Like setting an alarm clock for your computer. It runs the task whether you are there or not.', example: 'crontab -e\ncrontab -l\n# 0 2 * * * /backup.sh', why: 'Automate backups, reports, and maintenance.', challenge: 'Type crontab -l to list scheduled tasks.', validate: c => c.includes('crontab') },
+                    { id: 't3-l18', cmd: 'env / export', plain: 'View or set environment variables the whole system can read.', analogy: 'Like sticky notes on a shared whiteboard. Any program can read them.', example: 'env\nexport MY_VAR="hello"\necho $PATH', why: 'Configure how programs behave without editing config files.', challenge: 'Type env to see environment variables.', validate: c => c.includes('env') },
+                    { id: 't3-l19', cmd: 'md5sum / sha1sum', plain: 'Generate a checksum fingerprint for a file.', analogy: 'Like a fingerprint for a file. If even one character changes, the fingerprint changes completely.', example: 'md5sum file.txt\nsha256sum important.zip', why: 'Verify file integrity — did the download get corrupted?', challenge: 'Type md5sum readme.txt to get checksum.', validate: c => c.includes('md5sum') },
+                    { id: 't3-l20', cmd: 'mktemp', plain: 'Create a temporary file or directory with a unique name.', analogy: 'Like taking a numbered ticket at a deli counter. Guaranteed unique, thrown away when done.', example: 'mktemp\nmktemp -d', why: 'Safe way to create temp files in scripts without name conflicts.', challenge: 'Type mktemp to create a temp file.', validate: c => c.includes('mktemp') }
+                ]
+            },
+            {
+                id: 4, name: 'DevOps Real World', desc: 'SSH, networking, services, containers, and version control.', time: '~90 min', lessons: [
+                    { id: 't4-l1', cmd: 'ssh', plain: 'Connect securely to a remote server over the network.', analogy: 'Like a secure telephone line to another computer anywhere in the world.', example: 'ssh user@server.com\nssh -p 2220 bandit0@bandit.labs.overthewire.org', why: 'THE fundamental DevOps skill. You will SSH into servers daily.', challenge: 'Type ssh user@localhost to connect.', validate: c => c.includes('ssh') },
+                    { id: 't4-l2', cmd: 'ssh -i', plain: 'Connect using a private key file instead of a password.', analogy: 'Like using a physical key instead of a PIN code to get into a building.', example: 'ssh -i sshkey.private user@server\nssh -i ~/.ssh/id_rsa admin@10.0.0.1', why: 'Key-based auth is more secure and the standard in production.', challenge: 'Type ssh -i key.pem user@server to connect with key.', validate: c => c.includes('ssh') && c.includes('-i') },
+                    { id: 't4-l3', cmd: 'nc (netcat)', plain: 'Send or receive data over a network. The Swiss Army knife of networking.', analogy: 'Like a walkie-talkie for computers. Can send messages directly between machines.', example: 'nc localhost 30000\nnc -l 4444', why: 'Testing, debugging, and transferring data over networks.', challenge: 'Type nc localhost 30000 to connect.', validate: c => c.includes('nc') },
+                    { id: 't4-l4', cmd: 'openssl s_client', plain: 'Connect to a server using SSL/TLS encryption.', analogy: 'Like making a phone call over an encrypted line that no one can tap.', example: 'openssl s_client -connect localhost:30001\nopenssl s_client -connect google.com:443', why: 'Test HTTPS connections and debug SSL certificate issues.', challenge: 'Type openssl s_client -connect localhost:443 to connect.', validate: c => c.includes('openssl') },
+                    { id: 't4-l5', cmd: 'nmap', plain: 'Scan a server to see which ports and services are open.', analogy: 'Like knocking on every door in a building to see which ones open.', example: 'nmap localhost\nnmap -p 31000-32000 localhost', why: 'Essential for network reconnaissance and security auditing.', challenge: 'Type nmap localhost to scan ports.', validate: c => c.includes('nmap') },
+                    { id: 't4-l6', cmd: 'scp', plain: 'Copy files securely between your machine and a remote server.', analogy: 'Like FTP but encrypted. Sends files through the same secure tunnel as SSH.', example: 'scp file.txt user@server:/path/\nscp user@server:/remote/file.txt ./local/', why: 'Move files to and from servers securely.', challenge: 'Type scp file.txt user@server:/tmp/ to copy.', validate: c => c.includes('scp') },
+                    { id: 't4-l7', cmd: 'systemctl', plain: 'Control services on a Linux server. Start, stop, restart, check status.', analogy: 'Like the control panel for all background programs running on a server.', example: 'systemctl status nginx\nsystemctl restart apache2\nsystemctl enable docker', why: 'Managing services is a daily DevOps task.', challenge: 'Type systemctl status nginx to check.', validate: c => c.includes('systemctl') },
+                    { id: 't4-l8', cmd: 'journalctl', plain: 'Read system logs. Find out what went wrong and when.', analogy: 'Like a black box flight recorder for your server. Everything gets logged.', example: 'journalctl -u nginx --since today\njournalctl -f', why: 'First place to look when something breaks.', challenge: 'Type journalctl -u nginx to read logs.', validate: c => c.includes('journalctl') },
+                    { id: 't4-l9', cmd: 'df / du', plain: 'Check disk space. df shows total, du shows what is using it.', analogy: 'df is the fuel gauge. du shows which passengers are the heaviest.', example: 'df -h\ndu -sh /var/log\ndu -sh * | sort -rh | head', why: 'Servers running out of disk space is extremely common.', challenge: 'Type df -h to check disk space.', validate: c => c.includes('df') },
+                    { id: 't4-l10', cmd: 'lsof', plain: 'List all open files and which processes have them open.', analogy: 'Like a logbook showing which staff member has each key checked out.', example: 'lsof -i :80\nlsof -u user', why: 'Find what is using a port or blocking a file.', challenge: 'Type lsof -i :80 to check port 80.', validate: c => c.includes('lsof') },
+                    { id: 't4-l11', cmd: 'netstat / ss', plain: 'Show active network connections and open ports.', analogy: 'Like a phone exchange log showing every call currently connected.', example: 'ss -tulnp\nnetstat -an | grep LISTEN', why: 'Debug networking issues and find what is listening.', challenge: 'Type ss -tulnp to see connections.', validate: c => c.includes('ss') || c.includes('netstat') },
+                    { id: 't4-l12', cmd: 'ufw', plain: 'Uncomplicated Firewall. Control what network traffic is allowed.', analogy: 'Like a bouncer on the door. You give them a list of who is allowed in.', example: 'ufw status\nufw allow 22\nufw enable', why: 'First line of server security.', challenge: 'Type ufw status to check firewall.', validate: c => c.includes('ufw') },
+                    { id: 't4-l13', cmd: 'apt / yum', plain: 'Install software packages. apt for Ubuntu, yum for Red Hat.', analogy: 'Like an app store but for the terminal. One command installs anything.', example: 'apt update && apt upgrade\napt install vim\nyum install httpd', why: 'Installing and updating software is constant.', challenge: 'Type apt update to refresh packages.', validate: c => c.includes('apt') },
+                    { id: 't4-l14', cmd: 'vim basics', plain: 'Text editor inside the terminal. i to insert, Esc then :wq to save.', analogy: 'Like Notepad but you are trapped inside until you learn the escape commands.', example: 'vim file.txt\n# Press i to type\n# Press Esc, then :wq to save and quit\n# Press Esc, then :q! to quit without saving', why: 'Sometimes vim is the only editor available on a server.', challenge: 'Type vim file.txt to open editor.', validate: c => c.includes('vim') },
+                    { id: 't4-l15', cmd: 'tmux', plain: 'Multiple terminal windows in one session. Sessions survive disconnection.', analogy: 'Like having multiple monitors inside one terminal window.', example: 'tmux new -s mysession\ntmux attach -t mysession\n# Ctrl+B then D to detach', why: 'Essential for long-running tasks on remote servers.', challenge: 'Type tmux new -s test to start a session.', validate: c => c.includes('tmux') },
+                    { id: 't4-l16', cmd: 'git (terminal)', plain: 'Version control from the command line. Track changes to code.', analogy: 'Like save points in a video game. Every commit is a point you can return to.', example: 'git init\ngit add . && git commit -m "message"\ngit log --oneline', why: 'Every developer and DevOps engineer uses git.', challenge: 'Type git init to start a repo.', validate: c => c.includes('git') },
+                    { id: 't4-l17', cmd: 'docker (basics)', plain: 'Run applications in isolated containers.', analogy: 'Like shipping containers. The app and everything it needs is packed inside.', example: 'docker run -it ubuntu bash\ndocker ps\ndocker images', why: 'Containers are the foundation of modern deployment.', challenge: 'Type docker ps to list containers.', validate: c => c.includes('docker') },
+                    { id: 't4-l18', cmd: '$0 / shell escape', plain: '$0 expands to the shell name. Used to escape restricted shells.', analogy: 'Like finding a fire exit in a locked room. $0 calls the shell itself.', example: '$0\n# Spawns a new shell, bypassing restrictions', why: 'Critical for CTF challenges and understanding shell security.', challenge: 'Type $0 to spawn a shell.', validate: c => c.trim() === '$0' }
+                ]
+            },
+            {
+                id: 5, name: 'OverTheWire Bandit', desc: 'All 34 Bandit levels explained plainly. The ultimate Linux CTF.', time: '~3 hrs', lessons: [
+                    { id: 't5-l1', cmd: 'Bandit 0→1', plain: 'SSH into the Bandit server and read the readme file for the password.', analogy: 'Your first mission: connect to a remote computer and find the secret code hidden in a file.', example: 'ssh -p 2220 bandit0@bandit.labs.overthewire.org\ncat readme', why: 'This is your first real Linux connection to a live server.', challenge: 'Type ssh -p 2220 bandit0@bandit.labs.overthewire.org', validate: c => c.includes('ssh') && c.includes('bandit') },
+                    { id: 't5-l2', cmd: 'Bandit 1→2', plain: 'Read a file with a dash (-) in the name. Use ./ to escape it.', analogy: 'The filename is a trap. The dash looks like a flag, so you trick the terminal with ./', example: 'cat ./-', why: 'Special characters in filenames require escaping.', challenge: 'Type cat ./- to read the dashed file.', validate: c => c.includes('cat') && c.includes('./-') },
+                    { id: 't5-l3', cmd: 'Bandit 2→3', plain: 'Read a file with spaces in the name. Use quotes or backslash.', analogy: 'Spaces confuse the terminal. Wrap the name in quotes so it treats it as one thing.', example: 'cat "spaces in this filename"', why: 'Filenames with spaces are common and must be handled properly.', challenge: 'Type cat "spaces in this filename" to read.', validate: c => c.includes('cat') && c.includes('"') },
+                    { id: 't5-l4', cmd: 'Bandit 3→4', plain: 'Find a hidden file. Files starting with . are hidden by default.', analogy: 'Like a secret compartment. ls shows the room but ls -la reveals the hidden drawer.', example: 'ls -la inhere/\ncat inhere/.hidden', why: 'Hidden files store configs, secrets, and system data.', challenge: 'Type ls -la to reveal hidden files.', validate: c => c.includes('ls') && c.includes('-la') },
+                    { id: 't5-l5', cmd: 'Bandit 4→5', plain: 'Identify which file is human-readable among many binary files.', analogy: 'Like sorting through a pile of documents — most are shredded, one is intact.', example: 'file inhere/*\ncat inhere/-file07', why: 'The file command tells truth about contents regardless of name.', challenge: 'Type file ./* to check file types.', validate: c => c.includes('file') },
+                    { id: 't5-l6', cmd: 'Bandit 5→6', plain: 'Find a file by exact size and properties using find.', analogy: 'Search dog with very specific instructions: exact weight, not a runner, readable.', example: 'find inhere -type f -size 1033c ! -executable -readable', why: 'find with multiple filters is incredibly powerful.', challenge: 'Type find . -size 1033c to find by size.', validate: c => c.includes('find') && c.includes('1033') },
+                    { id: 't5-l7', cmd: 'Bandit 6→7', plain: 'Search the entire filesystem by owner and group.', analogy: 'Find a needle in a haystack but you know the needle is owned by a specific person.', example: 'find / -user bandit7 -group bandit6 -size 33c 2>/dev/null', why: 'Combining find filters with error suppression.', challenge: 'Type find / -user bandit7 -size 33c 2>/dev/null', validate: c => c.includes('find') && c.includes('bandit7') },
+                    { id: 't5-l8', cmd: 'Bandit 7→8', plain: 'Search inside a huge file for one specific word using grep.', analogy: 'Ctrl+F on steroids. Find one word in a million-line file instantly.', example: 'grep "millionth" data.txt', why: 'grep is the fastest way to find anything in text.', challenge: 'Type grep "millionth" data.txt to search.', validate: c => c.includes('grep') && c.includes('millionth') },
+                    { id: 't5-l9', cmd: 'Bandit 8→9', plain: 'Find the one unique line in a file full of duplicates.', analogy: 'A pile of 1000 cards where 999 have duplicates. Find the one-of-a-kind.', example: 'sort data.txt | uniq -u', why: 'The sort | uniq combo is a fundamental pattern.', challenge: 'Type sort data.txt | uniq -u to find unique.', validate: c => c.includes('sort') && c.includes('uniq') },
+                    { id: 't5-l10', cmd: 'Bandit 9→10', plain: 'Extract readable strings from a binary file and filter them.', analogy: 'X-ray a locked box to read the label inside without opening it.', example: 'strings data.txt | grep "=="', why: 'strings reveals hidden text in any file.', challenge: 'Type strings data.txt | grep "==" to extract.', validate: c => c.includes('strings') && c.includes('grep') },
+                    { id: 't5-l11', cmd: 'Bandit 10→11', plain: 'Decode base64-encoded content to reveal the password.', analogy: 'The password is written in code. base64 -d cracks it.', example: 'base64 -d data.txt', why: 'Base64 encoding is everywhere — emails, APIs, web.', challenge: 'Type base64 -d data.txt to decode.', validate: c => c.includes('base64') && c.includes('-d') },
+                    { id: 't5-l12', cmd: 'Bandit 11→12', plain: 'Decode ROT13 cipher using the tr command.', analogy: 'Every letter shifted 13 places. A becomes N. tr shifts them back.', example: 'cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"', why: 'Understanding character substitution ciphers.', challenge: 'Type cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"', validate: c => c.includes('tr') && c.includes('A-Za-z') },
+                    { id: 't5-l13', cmd: 'Bandit 12→13', plain: 'Reverse a hexdump then decompress nested archives repeatedly.', analogy: 'A Russian nesting doll of compression. Each layer reveals another format inside.', example: 'xxd -r data.txt > output\nfile output\ngzip -d output.gz\nbzip2 -d output.bz2\ntar -xf output.tar', why: 'Real-world data often has multiple compression layers.', challenge: 'Type xxd -r data.txt > output to reverse hex.', validate: c => c.includes('xxd') && c.includes('-r') },
+                    { id: 't5-l14', cmd: 'Bandit 13→14', plain: 'Log in to SSH using a private key file instead of a password.', analogy: 'Using a physical key instead of typing a code. The key file IS the credential.', example: 'ssh -i sshkey.private bandit14@localhost -p 2220', why: 'Key-based SSH is the production standard.', challenge: 'Type ssh -i sshkey.private bandit14@localhost', validate: c => c.includes('ssh') && c.includes('-i') },
+                    { id: 't5-l15', cmd: 'Bandit 14→15', plain: 'Send the current password to a port using netcat.', analogy: 'Slide the secret code under a door. The service reads it and gives you the next one.', example: 'echo "password" | nc localhost 30000', why: 'Netcat is the fundamental networking tool.', challenge: 'Type nc localhost 30000 to connect.', validate: c => c.includes('nc') && c.includes('30000') },
+                    { id: 't5-l16', cmd: 'Bandit 15→16', plain: 'Send data over an SSL/TLS encrypted connection.', analogy: 'Same as netcat but through an encrypted tunnel no one can spy on.', example: 'openssl s_client -connect localhost:30001', why: 'Encrypted connections are the standard for any real service.', challenge: 'Type openssl s_client -connect localhost:30001', validate: c => c.includes('openssl') && c.includes('30001') },
+                    { id: 't5-l17', cmd: 'Bandit 16→17', plain: 'Scan for open ports, find the right one, connect with SSL.', analogy: 'Knock on 1000 doors, find which one opens, then speak through it securely.', example: 'nmap -p 31000-32000 localhost\nopenssl s_client -connect localhost:31790', why: 'Combining reconnaissance with exploitation.', challenge: 'Type nmap -p 31000-32000 localhost to scan.', validate: c => c.includes('nmap') && c.includes('31000') },
+                    { id: 't5-l18', cmd: 'Bandit 17→18', plain: 'Find the difference between two files to get the password.', analogy: 'Two lists side by side. Spot the one line that changed.', example: 'diff passwords.old passwords.new', why: 'diff is essential for tracking changes.', challenge: 'Type diff passwords.old passwords.new', validate: c => c.includes('diff') },
+                    { id: 't5-l19', cmd: 'Bandit 18→19', plain: 'Run a command via SSH without getting an interactive shell.', analogy: 'Send a messenger to grab a file and bring it back, without going yourself.', example: 'ssh bandit18@localhost cat readme', why: 'Sometimes the shell kicks you out — execute remotely instead.', challenge: 'Type ssh user@localhost cat readme', validate: c => c.includes('ssh') && c.includes('cat') },
+                    { id: 't5-l20', cmd: 'Bandit 19→20', plain: 'Use a SUID binary that runs commands as a different user.', analogy: 'A magic stamp that lets you act as someone else for one command.', example: './bandit20-do cat /etc/bandit_pass/bandit20', why: 'Understanding SUID is crucial for Linux security.', challenge: 'Type ./bandit20-do id to test.', validate: c => c.includes('bandit20-do') },
+                    { id: 't5-l21', cmd: 'Bandit 20→21', plain: 'Set up a listener and connector. Two processes communicating.', analogy: 'Two walkie-talkies. One listens, the other speaks. They trade secrets.', example: 'nc -l 4444 &\n./suconnect 4444', why: 'Multi-process networking is fundamental.', challenge: 'Type nc -l 4444 to start listener.', validate: c => c.includes('nc') && c.includes('-l') },
+                    { id: 't5-l22', cmd: 'Bandit 21→22', plain: 'Read cron jobs to find scripts that run automatically.', analogy: 'Check the building schedule to see what automated tasks happen and when.', example: 'cat /etc/cron.d/cronjob_bandit22\ncat /usr/bin/cronjob_bandit22.sh', why: 'Cron jobs often write passwords to predictable locations.', challenge: 'Type cat /etc/cron.d/* to list cron jobs.', validate: c => c.includes('cron') },
+                    { id: 't5-l23', cmd: 'Bandit 22→23', plain: 'Read cron scripts to understand shell logic and find the output.', analogy: 'Reverse-engineer the automated robot to find where it hides things.', example: 'cat /usr/bin/cronjob_bandit23.sh\necho $(whoami) | md5sum', why: 'Reading bash scripts is a core Linux skill.', challenge: 'Type cat /usr/bin/cronjob_bandit23.sh', validate: c => c.includes('cat') && c.includes('cronjob') },
+                    { id: 't5-l24', cmd: 'Bandit 23→24', plain: 'Write a bash script, make it executable, place it for cron to run.', analogy: 'Write instructions for the robot, then leave them where the robot picks up tasks.', example: '#!/bin/bash\ncat /etc/bandit_pass/bandit24 > /tmp/mypass\nchmod +x script.sh', why: 'Writing scripts that interact with cron is real sysadmin work.', challenge: 'Type chmod +x script.sh to make executable.', validate: c => c.includes('chmod') && c.includes('+x') },
+                    { id: 't5-l25', cmd: 'Bandit 24→25', plain: 'Brute force a 4-digit PIN using a bash loop and netcat.', analogy: 'Try all 10,000 combinations on a padlock, but automated.', example: 'for i in $(seq 0000 9999); do\n  echo "password $i"\ndone | nc localhost 30002', why: 'Understanding brute force and automated testing.', challenge: 'Type for i in $(seq 0 9); do echo $i; done', validate: c => c.includes('for') && c.includes('do') },
+                    { id: 't5-l26', cmd: 'Bandit 25→26', plain: 'Escape a restricted shell using the more pager and vim.', analogy: 'Trapped in a tiny room but you find a window (more) that leads to a door (vim).', example: '# Shell uses more as login shell\n# Resize terminal tiny to trigger more\n# Press v to open vim\n# :e /etc/bandit_pass/bandit26', why: 'Understanding shell restrictions and how to bypass them.', challenge: 'Type more readme.txt to use the pager.', validate: c => c.includes('more') },
+                    { id: 't5-l27', cmd: 'Bandit 26→27', plain: 'Chain vim escape with SUID binary to read the next password.', analogy: 'After escaping the room, use the magic stamp you find inside.', example: '# In vim: :set shell=/bin/bash\n# :shell\n./bandit27-do cat /etc/bandit_pass/bandit27', why: 'Chaining multiple exploits is how real pentesting works.', challenge: 'Type ./bandit27-do id to test SUID.', validate: c => c.includes('bandit27-do') },
+                    { id: 't5-l28', cmd: 'Bandit 27→28', plain: 'Clone a git repository over SSH with a custom port.', analogy: 'Download a project from a private vault using your secure key.', example: 'git clone ssh://bandit27-git@localhost:2220/home/bandit27-git/repo', why: 'Cloning repos with custom SSH ports is common in real work.', challenge: 'Type git clone to clone a repo.', validate: c => c.includes('git') && c.includes('clone') },
+                    { id: 't5-l29', cmd: 'Bandit 28→29', plain: 'Find deleted content in git commit history.', analogy: 'Deleted text leaves fingerprints. Git remembers everything.', example: 'git log\ngit show HEAD~1\ngit diff HEAD~1', why: 'Nothing is truly deleted in git. History reveals secrets.', challenge: 'Type git log to see history.', validate: c => c.includes('git') && c.includes('log') },
+                    { id: 't5-l30', cmd: 'Bandit 29→30', plain: 'Switch git branches to find hidden content.', analogy: 'The safe has multiple compartments. The password is in a different drawer.', example: 'git branch -a\ngit checkout dev', why: 'Branches can contain secrets not visible on main.', challenge: 'Type git branch -a to list branches.', validate: c => c.includes('git') && c.includes('branch') },
+                    { id: 't5-l31', cmd: 'Bandit 30→31', plain: 'Find passwords hidden in git tags.', analogy: 'Tags are sticky notes attached to specific moments. Check them all.', example: 'git tag\ngit show secret', why: 'Tags are often overlooked but can contain sensitive data.', challenge: 'Type git tag to list tags.', validate: c => c.includes('git') && c.includes('tag') },
+                    { id: 't5-l32', cmd: 'Bandit 31→32', plain: 'Write to a repository and push, triggering a server-side hook.', analogy: 'Drop a letter in the mailbox. The postal service (git hook) processes it.', example: 'git add -f file.txt\ngit commit -m "add file"\ngit push', why: 'Git hooks automate actions on push — CI/CD basics.', challenge: 'Type git push to push changes.', validate: c => c.includes('git') && c.includes('push') },
+                    { id: 't5-l33', cmd: 'Bandit 32→33', plain: 'Escape the UPPERCASE SHELL using $0 to call the real shell.', analogy: 'Everything you type gets SHOUTED. But $0 whispers directly to the shell itself.', example: '$0\n# Spawns /bin/sh, bypassing the uppercase trap\ncat /etc/bandit_pass/bandit33', why: '$0 is the program name — in a shell, it is the shell itself.', challenge: 'Type $0 to escape the shell.', validate: c => c.trim() === '$0' },
+                    { id: 't5-l34', cmd: 'Bandit 33→END', plain: 'Congratulations! You have completed all 34 OverTheWire Bandit levels.', analogy: 'You climbed the entire mountain. From zero SSH knowledge to shell escapes and git exploitation.', example: 'cat /etc/bandit_pass/bandit33\n# You did it!', why: 'You now have real, practical Linux security skills.', challenge: 'Type echo "I completed Bandit!" to celebrate.', validate: c => c.includes('echo') }
+                ]
+            }
+        ];
+        const COMING = [];
+
+        /* ========== FAKE FILESYSTEM ========== */
+        class FakeFS {
+            constructor() { this.reset() }
+            reset() {
+                this.tree = { home: { user: { Documents: { 'readme.txt': 'Welcome to LinuxPlain!', 'project-plan.txt': 'Step 1: Learn Linux\nStep 2: Get hired\nStep 3: Profit' }, Downloads: { 'setup.sh': '#!/bin/bash\necho installing', 'photo.jpg': '[binary image data]' }, Music: { 'playlist.m3u': 'song1.mp3\nsong2.mp3\nsong3.mp3' }, Pictures: {}, secret: { 'password.txt': 'TopSecret123', 'hidden-note.txt': 'You found the secret folder!' }, 'readme.txt': 'Welcome to LinuxPlain!\nThis is your home directory.\nTry ls to look around.', 'data.txt': 'apple\nbanana\ncherry\napple\ndate\nbanana\nfig\ngrape\napple\nhoneydew', 'notes.txt': 'Buy milk\nLearn Linux\nFix the bug\nDeploy to server', '.bashrc': 'export PATH=/usr/bin:$PATH', '.profile': '# User profile config' } }, etc: { 'hosts': '127.0.0.1 localhost', 'hostname': 'linuxplain', 'passwd': 'root:x:0:0::/root:/bin/bash\nuser:x:1000:1000::/home/user:/bin/bash' }, var: { log: { 'syslog': 'Feb 26 09:00:01 system started\nFeb 26 09:00:05 network up\nFeb 26 09:01:12 error: disk low\nFeb 26 09:02:00 cron executed\nFeb 26 09:05:30 warning: high cpu\nFeb 26 09:10:00 error: timeout', 'auth.log': 'Login success: user\nLogin failed: admin\nLogin success: user' } }, root: { '.secret': 'root secret file' }, tmp: {} };
+                this.cwd = ['home', 'user']
+            }
+            _nav(p) { if (!p || p === '~') return ['home', 'user']; let parts = p === '/' ? [] : p.startsWith('/') ? p.split('/').filter(Boolean) : [...this.cwd, ...p.split('/').filter(Boolean)]; let r = []; for (let s of parts) { if (s === '..') r.pop(); else if (s !== '.') r.push(s) } return r }
+            _get(parts) { let n = this.tree; for (let p of parts) { if (!n || typeof n === 'string') return null; n = n[p] } return n === undefined ? null : n }
+            getCwd() { return '/' + this.cwd.join('/') }
+            ls(args) { let all = false, long = false, tgt = null; if (args) for (let a of args.split(/\s+/)) { if (a.includes('a')) all = true; if (a.includes('l')) long = true; if (!a.startsWith('-')) tgt = a } let parts = tgt ? this._nav(tgt) : this.cwd; let n = this._get(parts); if (n === null) return { err: `Folder "${tgt}" doesn't exist. Check spelling or use ls to see what's here.` }; if (typeof n === 'string') return { out: tgt || parts[parts.length - 1] }; let keys = Object.keys(n); if (!all) keys = keys.filter(k => !k.startsWith('.')); if (!long) return { out: keys.join('  ') }; let lines = ['total ' + keys.length]; if (all) lines.push('drwxr-xr-x  .', 'drwxr-xr-x  ..'); for (let k of keys) { let v = n[k], d = typeof v === 'object'; lines.push((d ? 'd' : '-') + 'rwxr-xr-x  1 user user  ' + (d ? '4096' : String(typeof v === 'string' ? v.length : 0).padStart(4)) + ' Feb 26 09:00 ' + k) } return { out: lines.join('\n') } }
+            cd(t) { if (!t || t === '~') { this.cwd = ['home', 'user']; return { out: '' } } let p = this._nav(t), n = this._get(p); if (n === null) return { err: `Folder "${t}" doesn't exist. Try ls to see available folders.` }; if (typeof n === 'string') return { err: `"${t}" is a file, not a folder. You can only cd into folders.` }; this.cwd = [...p]; return { out: '' } }
+            mkdir(name) { if (!name) return { err: 'mkdir needs a name. Try: mkdir foldername' }; let n = this._get(this.cwd); if (n[name]) return { err: `"${name}" already exists.` }; n[name] = {}; return { out: '' } }
+            touch(name) { if (!name) return { err: 'touch needs a filename. Try: touch myfile.txt' }; let n = this._get(this.cwd); if (!n[name]) n[name] = ''; return { out: '' } }
+            cat(name) { if (!name) return { err: 'cat needs a filename. Try: cat readme.txt' }; let p = [...this.cwd, ...name.split('/').filter(Boolean)], r = []; for (let s of p) { if (s === '..') r.pop(); else if (s !== '.') r.push(s) } let n = this._get(r); if (n === null) return { err: `File "${name}" not found. Try ls to see available files.` }; if (typeof n === 'object') return { err: `"${name}" is a folder, not a file. Try ls ${name} instead.` }; return { out: n } }
+            cp(s, d) { if (!s || !d) return { err: 'cp needs two names. Try: cp source.txt destination.txt' }; let sp = [...this.cwd, ...s.split('/').filter(Boolean)], r = []; for (let x of sp) { if (x === '..') r.pop(); else if (x !== '.') r.push(x) } let v = this._get(r); if (v === null) return { err: `"${s}" not found. Check the filename.` }; let n = this._get(this.cwd); n[d] = typeof v === 'string' ? v : { ...v }; return { out: '' } }
+            mv(s, d) { if (!s || !d) return { err: 'mv needs two names. Try: mv oldname.txt newname.txt' }; let n = this._get(this.cwd); if (n[s] === undefined) return { err: `"${s}" not found. Check the filename.` }; n[d] = n[s]; delete n[s]; return { out: '' } }
+            rm(args) { if (!args) return { err: 'rm needs a filename. Try: rm filename.txt' }; let name = args.replace(/-[rf]+\s*/g, '').trim(); if (!name) return { err: 'rm needs a filename after the flags.' }; let n = this._get(this.cwd); if (n[name] === undefined) return { err: `"${name}" not found. Try ls to see what files are here.` }; delete n[name]; return { out: '' } }
+        }
+        let fs = new FakeFS();
+
+        /* ========== LOCALSTORAGE (V2 keys) ========== */
+        const LS = {
+            get(k, def) { try { let v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : def } catch { return def } },
+            set(k, v) { localStorage.setItem(k, JSON.stringify(v)) }
+        };
+        function getCompleted() { return LS.get('lp_completed_lessons', []) }
+        function isCompleted(id) { return getCompleted().includes(id) }
+        function markComplete(id) { let c = getCompleted(); if (!c.includes(id)) { c.push(id); LS.set('lp_completed_lessons', c) } }
+        function getCurrent() { return LS.get('lp_current_lesson', null) }
+        function setCurrent(id) { LS.set('lp_current_lesson', id) }
+        function isStarted() { return LS.get('lp_started', false) }
+        function setStarted() { LS.set('lp_started', true) }
+        function getStreak() { return LS.get('lp_streak', 0) }
+        function updateStreak() {
+            const today = new Date().toDateString(), last = LS.get('lp_last_visit', null);
+            if (last !== today) {
+                const y = new Date(Date.now() - 864e5).toDateString();
+                LS.set('lp_streak', last === y ? getStreak() + 1 : 1); LS.set('lp_last_visit', today)
+            }
+        }
+        function findNextLesson() { for (let t of TIERS) for (let l of t.lessons) if (!isCompleted(l.id)) return l.id; return null }
+        function findLessonById(id) { for (let t of TIERS) for (let i = 0; i < t.lessons.length; i++)if (t.lessons[i].id === id) return { tier: t, idx: i }; return null }
+        function firstIncompletInTier(tierId) { let t = TIERS.find(x => x.id === tierId); if (!t) return null; for (let l of t.lessons) if (!isCompleted(l.id)) return l.id; return t.lessons[0].id }
+
+        /* ========== NAVIGATION ========== */
+        let currentScreen = 'landing';
+        function showScreen(name, opts) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(name).classList.add('active'); currentScreen = name;
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            let nl = document.getElementById('nav-' + name); if (nl) nl.classList.add('active');
+            if (name === 'tiers') renderTiers();
+            if (name === 'lesson') { let lid = opts?.lessonId; if (!lid) { lid = getCurrent() || findNextLesson() || 't1-l1' } goToLesson(lid) }
+            if (name === 'progress') renderProgress();
+            if (name === 'reference') renderReference();
+            if (name !== 'lesson') window.scrollTo(0, 0);
+        }
+        function handleCTA() {
+            if (isStarted()) { let lid = getCurrent() || findNextLesson(); if (lid) showScreen('lesson', { lessonId: lid }); else showScreen('tiers') }
+            else { setStarted(); showScreen('tiers') }
+        }
+
+        /* ========== TIERS ========== */
+        function renderTiers() {
+            let h = '<h2 class="section-title">Choose Your Starting Point</h2><p class="section-sub">Pick a tier. You can always come back.</p><div class="tiers-grid">';
+            TIERS.forEach(t => {
+                let done = t.lessons.filter(l => isCompleted(l.id)).length, total = t.lessons.length, pct = Math.round(done / total * 100), full = done === total;
+                h += `<div class="tier-card${full ? ' completed' : ''}" onclick="showScreen('lesson',{lessonId:firstIncompletInTier(${t.id})})">
+<span class="tier-badge">TIER ${t.id}</span><span class="tier-status">${full ? '✅' : ''}</span>
+<h3>${t.name}</h3><p>${t.desc}</p>
+<div class="tier-meta"><span>${total} lessons</span><span>${t.time}</span><span>${done}/${total} done</span></div>
+<div class="tier-progress"><div class="tier-progress-fill" style="width:${pct}%"></div></div></div>`
+            });
+            COMING.forEach(t => { h += `<div class="tier-card locked"><span class="tier-badge locked-badge">TIER ${t.id}</span><span class="tier-status">🔒</span><h3>${t.name}</h3><p>${t.desc}</p><div class="tier-meta"><span>Coming ${t.badge}</span></div></div>` });
+            h += '</div>'; document.getElementById('tiers').innerHTML = h;
+        }
+
+        /* ========== LESSON ========== */
+        let activeLessonId = null, challengeDone = false;
+        function goToLesson(lid) {
+            let info = findLessonById(lid); if (!info) return;
+            activeLessonId = lid; challengeDone = isCompleted(lid);
+            setCurrent(lid); updateStreak();
+            let { tier: t, idx: i } = info, L = t.lessons[i], done = isCompleted(lid);
+            document.getElementById('lessonContent').innerHTML = `
+<div class="lesson-meta">Tier ${t.id} · Lesson ${i + 1} of ${t.lessons.length}</div>
+<div class="lesson-cmd">${esc(L.cmd)}</div>
+<div class="lesson-section"><div class="lesson-label">Plain English</div><p class="lesson-plain">${esc(L.plain)}</p></div>
+<div class="lesson-section"><div class="lesson-label">Real-World Analogy</div><p class="lesson-analogy">${esc(L.analogy)}</p></div>
+<div class="lesson-section"><div class="lesson-label">Example</div><div class="lesson-example">${esc(L.example).replace(/\n/g, '<br>')}</div></div>
+<div class="lesson-section"><div class="lesson-label">Why This Matters</div><p class="lesson-why">${esc(L.why)}</p></div>
+<div class="lesson-nav">
+<button class="btn-lesson" onclick="navLesson(-1)" ${i === 0 ? 'disabled' : ''}>← Previous</button>
+<button class="btn-lesson" onclick="showScreen('tiers')">All Lessons</button>
+<button class="btn-lesson primary" onclick="navLesson(1)">${i < t.lessons.length - 1 ? 'Next →' : 'Finish Tier'}</button>
+</div>`;
+            document.getElementById('lessonContent').scrollTop = 0;
+            document.getElementById('termChallenge').innerHTML = `<div class="challenge-label">Challenge</div><p>${esc(L.challenge)}</p>
+<div class="challenge-status${done ? ' success' : ''}" id="chSt">${done ? '✅ Already completed!' : ''}</div>
+${done ? '' : '<div class="challenge-skip" onclick="skipChallenge()">Skip challenge →</div>'}`;
+            let tb = document.getElementById('termBody');
+            tb.innerHTML = '<div class="terminal-line output">LinuxPlain Terminal v1.0</div><div class="terminal-line output" style="color:var(--grey)">Type commands below. This is a simulated terminal.</div><div class="terminal-line output">&nbsp;</div>';
+            document.getElementById('termPrompt').textContent = `user@linuxplain:${fs.getCwd()}$ `;
+            document.getElementById('termInput').value = '';
+            setTimeout(() => document.getElementById('termInput').focus(), 100);
+            updateExplorer();
+        }
+        function navLesson(dir) {
+            let info = findLessonById(activeLessonId); if (!info) return;
+            let { tier: t, idx: i } = info, next = i + dir;
+            if (next < 0) return;
+            if (next >= t.lessons.length) {
+                let ni = TIERS.findIndex(x => x.id === t.id) + 1;
+                if (ni < TIERS.length) goToLesson(TIERS[ni].lessons[0].id); else showScreen('tiers'); return
+            }
+            goToLesson(t.lessons[next].id);
+        }
+        function skipChallenge() {
+            challengeDone = true; markComplete(activeLessonId);
+            let nextId = findNextLesson(); if (nextId) setCurrent(nextId);
+            document.getElementById('chSt').className = 'challenge-status success';
+            document.getElementById('chSt').textContent = '⏭️ Skipped';
+            let skip = document.querySelector('.challenge-skip'); if (skip) skip.remove();
+        }
+
+        /* ========== TERMINAL ========== */
+        function exec(input) {
+            const tb = document.getElementById('termBody'), pr = fs.getCwd();
+            tb.innerHTML += `<div class="terminal-line"><span style="color:var(--green)">user@linuxplain:${pr}$</span> ${esc(input)}</div>`;
+
+            let oldKeys = []; let nOld = fs._get(fs.cwd); if (nOld && typeof nOld === 'object') oldKeys = Object.keys(nOld);
+            let oldCwd = fs.getCwd();
+            let parts = input.trim().split(/\s+/), cmd = parts[0], args = parts.slice(1).join(' '), R = { out: '', err: '' }, handledByPipe = false;
+
+            if (input.includes('|')) {
+                try {
+                    let cmds = input.split('|').map(s => s.trim()), currentOut = null, pipeSuccess = true;
+                    for (let i = 0; i < cmds.length; i++) {
+                        let cInput = cmds[i], pParts = cInput.split(/\s+/), pCmd = pParts[0], pArgs = pParts.slice(1).join(' '), cR = { out: '', err: '' };
+                        if (pCmd === 'ls') {
+                            cR = typeof currentOut === 'string' ? { err: 'ls does not accept pipe input' } : fs.ls(pArgs);
+                            if (cR.out && i < cmds.length - 1) {
+                                cR = { out: cR.out.split(/\s{2,}/).join('\n') };
+                            }
+                        }
+                        else if (pCmd === 'cat') cR = (currentOut !== null && !pParts[1]) ? { out: currentOut } : fs.cat(pParts[1]);
+                        else if (pCmd === 'echo') cR = { out: cInput.replace(/^echo\s*/, '').replace(/^["']|["']$/g, '') };
+                        else if (pCmd === 'grep') {
+                            let s = pParts[1]?.replace(/['"]/g, ''), f = pParts[2];
+                            if (currentOut !== null && !f) cR = { out: currentOut.split('\n').filter(l => l.includes(s)).join('\n') };
+                            else { pipeSuccess = false; break; }
+                        } else if (pCmd === 'wc') {
+                            let f = pParts.find(p => !p.startsWith('-')), cStr = (currentOut !== null && !f) ? currentOut : (f ? fs.cat(f).out : null);
+                            if (cStr === null) { pipeSuccess = false; break; }
+                            cR = pArgs.includes('-l') ? { out: `${cStr.trim().split('\n').length}` } : { out: `  ${cStr.trim().split('\n').length}   ${cStr.split(/\s+/).filter(Boolean).length}  ${cStr.length}` };
+                        } else if (pCmd === 'sort') {
+                            let f = pParts.slice(1).find(p => !p.startsWith('-')), cStr = (currentOut !== null && !f) ? currentOut : (f ? fs.cat(f).out : null);
+                            if (cStr === null) { pipeSuccess = false; break; }
+                            cR = { out: cStr.trim().split('\n').sort().join('\n') };
+                        } else if (pCmd === 'uniq') {
+                            if (currentOut === null) { pipeSuccess = false; break; }
+                            let lines = currentOut.trim().split('\n'), u = [], isU = pArgs.includes('-u');
+                            for (let j = 0; j < lines.length; j++) if (isU ? ((j === 0 || lines[j] !== lines[j - 1]) && (j === lines.length - 1 || lines[j] !== lines[j + 1])) : (j === 0 || lines[j] !== lines[j - 1])) u.push(lines[j]);
+                            cR = { out: u.join('\n') };
+                        } else if (pCmd === 'base64') {
+                            if (currentOut !== null) cR = { out: btoa(currentOut) }; else { pipeSuccess = false; break; }
+                        } else if (pCmd === 'tr') {
+                            let from = pParts[1]?.replace(/["']/g, ''), to = pParts[2]?.replace(/["']/g, '');
+                            if (currentOut !== null && from === 'a-z' && to === 'A-Z') cR = { out: currentOut.toUpperCase() };
+                            else { pipeSuccess = false; break; }
+                        } else if (pCmd === 'sed') {
+                            if (currentOut === null) { pipeSuccess = false; break; }
+                            let sedMatch = cInput.match(/sed\s+["']?s\/(.+?)\/(.+?)\/g?["']?/);
+                            if (sedMatch) {
+                                let findStr = sedMatch[1], replStr = sedMatch[2];
+                                try {
+                                    cR = { out: currentOut.split('\n').map(line => line.split(findStr).join(replStr)).join('\n') };
+                                } catch (e) { cR = { out: currentOut }; }
+                            } else {
+                                cR = { out: currentOut };
+                            }
+                        } else { pipeSuccess = false; break; }
+                        if (cR.err) { R = cR; pipeSuccess = true; handledByPipe = true; break; }
+                        currentOut = cR.out;
+                    }
+                    if (pipeSuccess && !R.err) { R = { out: currentOut }; handledByPipe = true; }
+                } catch (e) { handledByPipe = false; }
+            }
+
+            if (!handledByPipe) {
+                switch (cmd) {
+                    case 'pwd': R = { out: fs.getCwd() }; break;
+                    case 'ls': R = fs.ls(args); break;
+                    case 'cd': R = fs.cd(parts[1]); break;
+                    case 'mkdir': R = fs.mkdir(parts[1]); break;
+                    case 'touch': R = fs.touch(parts[1]); break;
+                    case 'cat': R = fs.cat(parts[1]); break;
+                    case 'cp': R = fs.cp(parts[1], parts[2]); break;
+                    case 'mv': R = fs.mv(parts[1], parts[2]); break;
+                    case 'rm': R = fs.rm(args); break;
+                    case 'clear': tb.innerHTML = ''; updPrompt(); return;
+                    case 'echo': {
+                        let t = input.replace(/^echo\s*/, ''), m = t.match(/^["']?(.+?)["']?\s*(>>?)\s*(\S+)$/);
+                        if (m) { let n = fs._get(fs.cwd); n[m[3]] = (m[2] === '>>' ? ((n[m[3]] || '') + '\n') : '') + m[1]; R = { out: '' } }
+                        else R = { out: t.replace(/^["']|["']$/g, '') }; break
+                    }
+                    case 'man': R = { out: `NAME\n    ${parts[1] || '???'}\n\nDESCRIPTION\n    Manual page for ${parts[1] || 'this command'}.\n    In LinuxPlain, the lesson panel IS your manual!\n\n    In real Linux, press q to quit.` }; break;
+                    case 'grep': {
+                        let s = parts[1]?.replace(/['"]/g, ''), f = parts[2];
+                        if (!s) { R = { err: 'grep needs a search term. Try: grep "word" filename.txt' }; break }
+                        if (input.includes('|')) { R = { out: '(pipe result: matching lines shown)' }; break }
+                        if (!f) { R = { err: 'grep needs a file to search. Try: grep "word" filename.txt' }; break }
+                        let c = fs.cat(f); if (c.err) { R = c; break }
+                        let lines = c.out.split('\n').filter(l => l.toLowerCase().includes(s.toLowerCase()));
+                        R = { out: lines.length ? lines.join('\n') : `No matches for "${s}" in ${f}.` }; break
+                    }
+                    case 'find': {
+                        let name = ''; args.replace(/-name\s+["']?([^"'\s]+)["']?/, (m, n) => name = n);
+                        if (!name) { R = { out: '. (use: find . -name "pattern")' }; break }
+                        let found = []; (function walk(node, path) { if (typeof node === 'string') { if (path.endsWith(name.replace('*', '')) || name === '*') found.push(path) } else { for (let k in node) walk(node[k], path + '/' + k) } })(fs.tree, '');
+                        R = { out: found.length ? found.join('\n') : 'No files found matching that pattern.' }; break
+                    }
+                    case 'sort': {
+                        let f = input.includes('<') ? input.split('<')[1].trim() : parts[parts.length - 1];
+                        let c = fs.cat(f); if (c.err) { R = c; break } R = { out: c.out.split('\n').sort().join('\n') }; break
+                    }
+                    case 'uniq': { R = { out: 'uniq removes consecutive duplicates. Use with sort: sort file.txt | uniq' }; break }
+                    case 'wc': {
+                        let f = parts.find(p => !p.startsWith('-')); if (!f) { R = { err: 'wc needs a filename. Try: wc data.txt' }; break }
+                        let c = fs.cat(f); if (c.err) { R = c; break } let l = c.out.split('\n').length, w = c.out.split(/\s+/).filter(Boolean).length, ch = c.out.length;
+                        R = args.includes('-l') ? { out: `${l} ${f}` } : { out: `  ${l}   ${w}  ${ch} ${f}` }; break
+                    }
+                    case 'head': {
+                        let f = parts.find(p => !p.startsWith('-')); if (!f) { R = { err: 'head needs a filename. Try: head data.txt' }; break }
+                        let c = fs.cat(f); if (c.err) { R = c; break } let n = 10; let nf = parts.find(p => p.startsWith('-')); if (nf) n = parseInt(nf.slice(1)) || 10;
+                        R = { out: c.out.split('\n').slice(0, n).join('\n') }; break
+                    }
+                    case 'tail': {
+                        let f = parts.find(p => !p.startsWith('-')); if (!f) { R = { err: 'tail needs a filename. Try: tail data.txt' }; break }
+                        let c = fs.cat(f); if (c.err) { R = c; break } let n = 10; let nf = parts.find(p => p.startsWith('-')); if (nf) n = parseInt(nf.slice(1)) || 10;
+                        R = { out: c.out.split('\n').slice(-n).join('\n') }; break
+                    }
+                    case 'less': { let c = fs.cat(parts[1]); if (c.err) { R = c; break } R = { out: c.out + '\n\n(end — press q to quit in real Linux)' }; break }
+                    case 'chmod': case 'chown': R = { out: '' }; break;
+                    case 'sudo': { let sub = input.replace(/^sudo\s+/, ''); R = { out: '[sudo] password for user: ✓\n' + execSilent(sub) }; break }
+                    case 'file': {
+                        let f = parts[1]; if (!f) { R = { err: 'file needs a filename. Try: file readme.txt' }; break }
+                        let c = fs.cat(f); if (c && !c.err) R = { out: `${f}: ASCII text` }; else { let n = fs._get(fs._nav(f)); R = n !== null ? { out: `${f}: directory` } : { err: `"${f}" not found.` } }; break
+                    }
+                    case 'strings': { let f = parts[1]; if (!f) { R = { err: 'strings needs a filename.' }; break } let c = fs.cat(f); R = c.err ? c : { out: c.out }; break }
+                    case 'base64': { R = { out: args.includes('-d') ? 'Decoded: SGVsbG8gV29ybGQK → Hello World' : 'SGVsbG8gV29ybGQK (simulated base64 output)' }; break }
+                    case 'tr': { R = { out: input.includes('A-Z') ? 'HELLO' : '(tr: character translation applied)' }; break }
+                    case 'xxd': { R = { out: args.includes('-r') ? '(hexdump reversed to binary)' : '00000000: 4865 6c6c 6f20 576f 726c 640a  Hello World.' }; break }
+                    case 'gzip': case 'gunzip': case 'bzip2': case 'bunzip2': R = { out: '(compression/decompression simulated)' }; break;
+                    case 'tar': R = { out: args.includes('-x') ? 'Documents/\nreadme.txt\ndata.txt' : '(archive created)' }; break;
+                    case 'diff': { let f1 = parts[1], f2 = parts[2]; if (!f1 || !f2) { R = { err: 'diff needs two files. Try: diff file1.txt file2.txt' }; break } R = { out: `--- ${f1}\n+++ ${f2}\n@@ -1,3 +1,3 @@\n line 1\n-old content\n+new content\n line 3` }; break }
+                    case 'awk': { R = { out: '(awk output simulated — use WSL for real practice)\napple\nbanana\ncherry' }; break }
+                    case 'sed': { R = { out: input.replace(/.*sed\s+['"]?s\/(.+?)\/(.*?)\/.*['"]?\s+.*/, 'Replaced: $1 → $2') || '(sed applied)' }; break }
+                    case 'xargs': { R = { out: '(xargs: arguments passed to command)' }; break }
+                    case 'cut': { R = { out: '(cut: column extracted)\nfield_value' }; break }
+                    case 'tee': { R = { out: '(output written to file and displayed)' }; break }
+                    case 'ln': { R = { out: '' }; break }
+                    case 'ps': { R = { out: 'USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\nroot         1  0.0  0.1  16968  3920 ?        Ss   09:00   0:01 /sbin/init\nuser      1234  0.0  0.2  25432  5120 pts/0    S    09:01   0:00 bash\nnginx     5678  0.0  0.3  45672  8192 ?        S    09:02   0:00 nginx: worker' }; break }
+                    case 'kill': { R = { out: parts[1] ? '' : 'kill needs a PID. Try: kill 1234' }; if (!parts[1]) R = { err: R.out }; break }
+                    case 'crontab': { R = { out: args.includes('-l') ? '# m h dom mon dow command\n0 2 * * * /usr/local/bin/backup.sh\n*/5 * * * * /usr/local/bin/health-check.sh' : '(crontab editor opened — simulated)' }; break }
+                    case 'env': { R = { out: 'HOME=/home/user\nPATH=/usr/bin:/bin\nSHELL=/bin/bash\nUSER=user\nLANG=en_US.UTF-8\nTERM=xterm-256color' }; break }
+                    case 'export': { R = { out: '' }; break }
+                    case 'md5sum': case 'sha1sum': case 'sha256sum': { R = { out: `d41d8cd98f00b204e9800998ecf8427e  ${parts[1] || 'file'}` }; break }
+                    case 'mktemp': { R = { out: args.includes('-d') ? '/tmp/tmp.aB3xY9z42' : '/tmp/tmp.kL7mN2p38' }; break }
+                    case 'ssh': { R = { out: '(simulated) Connected to remote server.\nWelcome to Ubuntu 22.04 LTS\nLast login: Feb 26 2025\n\n(Cannot connect to real servers from this simulator)' }; break }
+                    case 'scp': { R = { out: 'file.txt       100%  1234    12.3KB/s   00:00 (simulated)' }; break }
+                    case 'nc': case 'netcat': { R = { out: '(simulated) Connection established.\nSend data here... (simulated netcat session)' }; break }
+                    case 'openssl': { R = { out: 'CONNECTED(00000003)\nSSL-Session:\n    Protocol: TLSv1.3\n    Cipher: AES256-GCM-SHA384\n(simulated SSL connection)' }; break }
+                    case 'nmap': { R = { out: 'Starting Nmap scan...\nPORT      STATE SERVICE\n22/tcp    open  ssh\n80/tcp    open  http\n443/tcp   open  https\n31790/tcp open  unknown\n(simulated scan)' }; break }
+                    case 'systemctl': { R = { out: args.includes('status') ? '● nginx.service - A high performance web server\n   Loaded: loaded\n   Active: active (running) since Feb 26 09:00:00\n   Main PID: 5678 (nginx)' : '(systemctl: action simulated)' }; break }
+                    case 'journalctl': { R = { out: 'Feb 26 09:00:01 server systemd: Started nginx\nFeb 26 09:01:12 server nginx: error: upstream timeout\nFeb 26 09:05:30 server nginx: warning: worker connections high' }; break }
+                    case 'df': { R = { out: 'Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        50G   32G   16G  67% /\ntmpfs           2.0G  1.2M  2.0G   1% /dev/shm' }; break }
+                    case 'du': { R = { out: '4.0K\t./Documents\n8.0K\t./Downloads\n2.0K\t./Music\n16K\t.' }; break }
+                    case 'lsof': { R = { out: 'COMMAND  PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME\nnginx   5678 www    6u   IPv4  12345      0t0  TCP *:80 (LISTEN)' }; break }
+                    case 'ss': case 'netstat': { R = { out: 'Netid  State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port\ntcp    LISTEN  0       128     0.0.0.0:22           0.0.0.0:*\ntcp    LISTEN  0       128     0.0.0.0:80           0.0.0.0:*' }; break }
+                    case 'ufw': { R = { out: args.includes('status') ? 'Status: active\n\nTo                         Action      From\n--                         ------      ----\n22/tcp                     ALLOW       Anywhere\n80/tcp                     ALLOW       Anywhere' : '(ufw: rule applied)' }; break }
+                    case 'apt': case 'yum': { R = { out: args.includes('update') ? 'Hit:1 http://archive.ubuntu.com/ubuntu jammy InRelease\nReading package lists... Done\nAll packages are up to date.' : '(package action simulated)' }; break }
+                    case 'vim': case 'vi': case 'nano': { R = { out: '(simulated editor session — use a real terminal for editing)' }; break }
+                    case 'tmux': { R = { out: '(simulated tmux session created)' }; break }
+                    case 'git': { R = { out: args.includes('log') ? 'abc1234 Initial commit\ndef5678 Add feature\nghi9012 Fix bug' : args.includes('branch') ? '* main\n  remotes/origin/dev\n  remotes/origin/main' : args.includes('tag') ? 'v1.0\nv2.0\nsecret' : 'Initialized empty Git repository (simulated)' }; break }
+                    case 'docker': { R = { out: args.includes('ps') ? 'CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\na1b2c3d4e5f6   ubuntu    "bash"    2m ago    Up 2m              myapp' : '(docker command simulated)' }; break }
+                    case 'more': { let c = fs.cat(parts[1]); R = c.err ? c : { out: c.out + '\n\n-- More -- (simulated pager)' }; break }
+                    case 'for': { R = { out: '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n(loop output simulated)' }; break }
+                    case '$0': { R = { out: '/bin/bash\n$ (new shell spawned — you escaped!)' }; break }
+                    case './bandit20-do': case './bandit27-do': { R = { out: 'uid=0(root) gid=0(root) (simulated SUID execution)' }; break }
+                    case 'help': R = { out: 'Commands: pwd ls cd mkdir touch cat cp mv rm echo clear man\ngrep find sort uniq wc head tail less chmod chown sudo file\nstrings base64 tr xxd gzip tar diff awk sed xargs cut tee ln\nps kill crontab env md5sum mktemp ssh nc nmap git docker\n\nType any command to try it!' }; break;
+                    default: R = { err: `"${cmd}" is not recognised. Type help to see available commands.` }
+                }
+            }
+            if (R.err) tb.innerHTML += `<div class="terminal-line error">${esc(R.err)}</div>`;
+            else if (R.out) tb.innerHTML += `<div class="terminal-line output">${esc(R.out)}</div>`;
+            updPrompt(); tb.scrollTop = tb.scrollHeight;
+
+            let newCwd = fs.getCwd();
+            let newKeys = []; let nNew = fs._get(fs.cwd); if (nNew && typeof nNew === 'object') newKeys = Object.keys(nNew);
+            if (newCwd !== oldCwd) { updateExplorer(); }
+            else {
+                let added = newKeys.filter(k => !oldKeys.includes(k));
+                let removed = oldKeys.filter(k => !newKeys.includes(k));
+                if (added.length > 0) updateExplorer('created', added[0]);
+                else if (removed.length > 0) updateExplorer('deleted', removed[0]);
+                else if (['rm', 'mkdir', 'touch', 'cp', 'mv', 'echo'].includes(cmd) || args.includes('>')) updateExplorer();
+            }
+
+            // Validate challenge
+            let info = findLessonById(activeLessonId);
+            if (info && !challengeDone) {
+                let L = info.tier.lessons[info.idx];
+                if (L.validate(input)) {
+                    challengeDone = true; markComplete(activeLessonId);
+                    let nextId = findNextLesson(); if (nextId) setCurrent(nextId);
+                    document.getElementById('chSt').className = 'challenge-status success';
+                    document.getElementById('chSt').textContent = '✅ Challenge complete!';
+                    let skip = document.querySelector('.challenge-skip'); if (skip) skip.remove();
+                    tb.innerHTML += `<div class="terminal-line" style="color:var(--green)">✅ Nice! Challenge complete.</div>`;
+                }
+            }
+        }
+        function execSilent(i) { let p = i.trim().split(/\s+/); if (p[0] === 'ls') return fs.ls(p.slice(1).join(' ')).out || ''; return '' }
+        function updPrompt() { document.getElementById('termPrompt').textContent = `user@linuxplain:${fs.getCwd()}$ ` }
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+        let cmdHistory = [], cmdPos = 0;
+        let explorerFlashTimer = null;
+        const KNOWN_CMDS = ['pwd', 'ls', 'cd', 'mkdir', 'touch', 'cat', 'cp', 'mv', 'rm', 'echo', 'clear', 'man', 'grep', 'find', 'sort', 'uniq', 'wc', 'head', 'tail', 'less', 'chmod', 'chown', 'sudo', 'file', 'strings', 'base64', 'tr', 'xxd', 'gzip', 'gunzip', 'bzip2', 'tar', 'diff', 'awk', 'sed', 'xargs', 'cut', 'tee', 'ln', 'ps', 'kill', 'crontab', 'env', 'export', 'md5sum', 'mktemp', 'ssh', 'scp', 'nc', 'openssl', 'nmap', 'systemctl', 'journalctl', 'df', 'du', 'lsof', 'ss', 'netstat', 'ufw', 'apt', 'vim', 'tmux', 'git', 'docker'];
+
+        function handleTab(input) {
+            let val = input.value, cursor = input.selectionStart;
+            let beforeCursor = val.slice(0, cursor);
+            let parts = beforeCursor.trimStart().split(/\s+/);
+            let isFirstWord = parts.length === 1 && !beforeCursor.match(/\s$/);
+            let wordToComplete = parts[parts.length - 1] || '';
+
+            let matches = [];
+            if (isFirstWord) {
+                matches = KNOWN_CMDS.filter(c => c.startsWith(wordToComplete));
+            } else {
+                let n = fs._get(fs.cwd);
+                if (n && typeof n === 'object') {
+                    matches = Object.keys(n).filter(k => k.startsWith(wordToComplete));
+                }
+            }
+            if (matches.length === 1) {
+                let match = matches[0];
+                let newVal = beforeCursor.slice(0, beforeCursor.length - wordToComplete.length) + match + (isFirstWord ? ' ' : '');
+                input.value = newVal + val.slice(cursor);
+                input.selectionStart = input.selectionEnd = newVal.length;
+            } else if (matches.length > 1) {
+                const tb = document.getElementById('termBody');
+                tb.innerHTML += `<div class="terminal-line"><span style="color:var(--green)">user@linuxplain:${fs.getCwd()}$</span> ${esc(val)}</div>`;
+                tb.innerHTML += `<div class="terminal-line output">${matches.join(' ')}</div>`;
+                updPrompt();
+                tb.scrollTop = tb.scrollHeight;
+            }
+        }
+
+        document.getElementById('termInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                let v = e.target.value.trim();
+                if (v) {
+                    cmdHistory.push(v);
+                    if (cmdHistory.length > 50) cmdHistory.shift();
+                    cmdPos = cmdHistory.length;
+                    exec(v);
+                    e.target.value = '';
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (cmdPos > 0) { cmdPos--; e.target.value = cmdHistory[cmdPos]; }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (cmdPos < cmdHistory.length - 1) { cmdPos++; e.target.value = cmdHistory[cmdPos]; }
+                else { cmdPos = cmdHistory.length; e.target.value = ''; }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                handleTab(e.target);
+            }
+        });
+
+        document.getElementById('mobileQuickKeys').addEventListener('click', e => {
+            if (e.target.tagName !== 'BUTTON') return;
+            let val = e.target.textContent, input = document.getElementById('termInput');
+            if (val === '↵') {
+                let v = input.value.trim(); if (v) {
+                    cmdHistory.push(v);
+                    if (cmdHistory.length > 50) cmdHistory.shift();
+                    cmdPos = cmdHistory.length;
+                    exec(v); input.value = '';
+                }
+            } else if (val === 'Tab') {
+                handleTab(input);
+                input.focus();
+            } else {
+                let ins = val === '..' ? '../' : val;
+                let start = input.selectionStart, end = input.selectionEnd;
+                let v = input.value;
+                input.value = v.substring(0, start) + ins + v.substring(end);
+                input.selectionStart = input.selectionEnd = start + ins.length;
+                input.focus();
+            }
+        });
+
+        let explorerExpanded = false;
+        function toggleExplorer() {
+            explorerExpanded = !explorerExpanded;
+            updateExplorer();
+        }
+        function updateExplorer(action = null, targetFile = null) {
+            if (explorerFlashTimer) { clearTimeout(explorerFlashTimer); explorerFlashTimer = null; }
+            const el = document.getElementById('fileExplorer');
+            if (!el) return;
+            const cwdStr = fs.getCwd();
+            const toggleText = explorerExpanded ? '[hide]' : '[show]';
+            let html = `<div class="file-explorer-header" onclick="toggleExplorer()"><span>📁 ${cwdStr}</span><span>${toggleText}</span></div>`;
+            if (explorerExpanded) {
+                let bodyHtml = '';
+                let n = fs._get(fs.cwd);
+                if (n && typeof n === 'object') {
+                    let keys = Object.keys(n).sort();
+                    keys.forEach((k, idx) => {
+                        let isDir = typeof n[k] === 'object';
+                        let isLast = idx === keys.length - 1;
+                        let prefix = isLast ? '└── ' : '├── ';
+                        let icon = isDir ? '📁' : '📄';
+                        let extraClass = (action === 'created' && k === targetFile) ? ' created' : '';
+                        bodyHtml += `<div class="fe-item${extraClass}" id="fe-item-${escapeId(k)}">${prefix}${icon} ${esc(isDir ? k + '/' : k)}</div>`;
+                    });
+                    if (action === 'deleted' && targetFile && !keys.includes(targetFile)) {
+                        bodyHtml += `<div class="fe-item" id="fe-item-${escapeId(targetFile)}" style="opacity:1">└── 📄 ${esc(targetFile)}</div>`;
+                    }
+                }
+                html += `<div class="file-explorer-body expanded">${bodyHtml}</div>`;
+            } else {
+                html += `<div class="file-explorer-body"></div>`;
+            }
+            el.innerHTML = html;
+
+            if (explorerExpanded) {
+                if (action === 'created' && targetFile) {
+                    let node = document.getElementById('fe-item-' + escapeId(targetFile));
+                    if (node) {
+                        explorerFlashTimer = setTimeout(() => { node.classList.remove('created'); }, 1000);
+                    }
+                }
+                if (action === 'deleted' && targetFile) {
+                    let node = document.getElementById('fe-item-' + escapeId(targetFile));
+                    if (node) {
+                        explorerFlashTimer = setTimeout(() => { node.style.opacity = '0'; }, 10);
+                        setTimeout(() => updateExplorer(), 300);
+                    }
+                }
+            }
+        }
+        function escapeId(str) { return str.replace(/[^a-zA-Z0-9_-]/g, '_'); }
+
+        document.getElementById('lesson').addEventListener('click', e => { if (!e.target.closest('button') && !e.target.closest('.file-explorer-header') && !e.target.closest('.mobile-quick-keys')) document.getElementById('termInput').focus() });
+
+        /* ========== PROGRESS ========== */
+        function renderProgress() {
+            let h = `<div style="text-align:center;margin-bottom:32px"><h2 class="section-title">Your Progress</h2><p class="section-sub">Track your Linux learning journey.</p></div>`;
+            h += `<div class="streak-box"><div class="streak-num">${getStreak()}</div><div class="streak-label">day streak</div></div>`;
+            h += '<div class="progress-grid">';
+            TIERS.forEach(t => {
+                let done = t.lessons.filter(l => isCompleted(l.id)).length, pct = Math.round(done / t.lessons.length * 100);
+                h += `<div class="progress-tier"><h3>Tier ${t.id}: ${t.name}</h3>
+<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+<div class="progress-text">${done}/${t.lessons.length} lessons · ${pct}%</div></div>`
+            });
+            h += `</div><div style="text-align:center;margin-top:32px">
+<button class="btn-primary" style="max-width:300px" onclick="handleCTA()">Continue Learning</button><br>
+<button class="btn-secondary" style="margin-top:16px;color:var(--red);border-color:var(--red)" onclick="if(confirm('Reset ALL progress? This cannot be undone.')&&confirm('Are you sure?')){localStorage.clear();location.reload()}">Reset Progress</button></div>`;
+            document.getElementById('progress').innerHTML = h;
+        }
+
+        /* ========== REFERENCE ========== */
+        let refFilter = 'all';
+        function renderReference() {
+            let all = []; TIERS.forEach(t => t.lessons.forEach(l => all.push({ ...l, tier: t.id })));
+            let h = `<div style="text-align:center;margin-bottom:32px"><h2 class="section-title">Command Reference</h2><p class="section-sub">Every command, explained plainly.</p></div>
+<div class="ref-search"><input type="text" id="refQ" placeholder="Search commands..." oninput="filterRef()"></div>
+<div class="ref-filters"><button class="ref-filter active" onclick="setFilter('all',this)">All</button><button class="ref-filter" onclick="setFilter(1,this)">Tier 1</button><button class="ref-filter" onclick="setFilter(2,this)">Tier 2</button><button class="ref-filter" onclick="setFilter(3,this)">Tier 3</button><button class="ref-filter" onclick="setFilter(4,this)">Tier 4</button><button class="ref-filter" onclick="setFilter(5,this)">Bandit</button></div>
+<div class="ref-grid" id="refGrid">`;
+            all.forEach(c => {
+                let done = isCompleted(c.id);
+                h += `<div class="ref-card" data-tier="${c.tier}" data-cmd="${c.cmd.toLowerCase()}" data-plain="${c.plain.toLowerCase()}" onclick="this.classList.toggle('open')">
+<div class="ref-card-top"><span class="ref-done-dot${done ? '' : ' incomplete'}"></span><span class="ref-card-cmd">${esc(c.cmd)}</span><span class="ref-card-desc">${esc(c.plain).substring(0, 80)}</span><span class="ref-card-tier">T${c.tier}</span></div>
+<div class="ref-expanded"><p class="ref-analogy">${esc(c.analogy)}</p><div class="ref-example">${esc(c.example).replace(/\n/g, '<br>')}</div></div></div>`
+            });
+            h += '</div>'; document.getElementById('reference').innerHTML = h;
+        }
+        function setFilter(f, btn) { refFilter = f; document.querySelectorAll('.ref-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); filterRef() }
+        function filterRef() {
+            let q = (document.getElementById('refQ')?.value || '').toLowerCase();
+            document.querySelectorAll('.ref-card').forEach(c => {
+                let mt = refFilter === 'all' || c.dataset.tier == refFilter;
+                let ms = !q || c.dataset.cmd.includes(q) || c.dataset.plain.includes(q);
+                c.style.display = mt && ms ? '' : 'none'
+            })
+        }
+
+        /* ========== INIT ========== */
+        (function () {
+            // CTA button text
+            document.getElementById('ctaBtn').textContent = isStarted() ? 'Continue Learning' : 'Start Learning — Free';
+            // Typing animation
+            const text = '$ learning linux the hard way is hard. learn it the plain way.';
+            const el = document.getElementById('typeTarget'); let i = 0;
+            (function type() { if (i <= text.length) { el.textContent = text.slice(0, i); i++; setTimeout(type, 45) } else { setTimeout(() => { i = 0; type() }, 4000) } })();
+        })()
+    </script>
+</body>
+
+</html>
